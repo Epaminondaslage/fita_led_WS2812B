@@ -80,3 +80,19 @@ A **Fita de LED WS2812B** é um tipo de **fita de LED endereçável**, ou seja, 
 - Precisa de alimentação 5V estável
 - Sensível a ruídos em longas distâncias
 - Pode exigir capacitor e resistor para proteção
+
+- 
+# Projeto para que o ESP32-WROOM controle a fita WS2812B por uma página web, com um botão HTML que alterna entre os efeitos (arco-íris, correr, teclado).
+
+
+## ✅ Facilidades
+
+- Criação de uma rede Wi-Fi (modo STA).
+- Servidor web no ESP32.
+- Página HTML com botão **"Mudar Efeito"**.
+- Efeitos alternam sequencialmente a cada clique.
+
+## 📦 Requisitos
+
+- Biblioteca: **Adafruit NeoPixel**
+- ESP32 conectado à sua rede Wi-Fi
