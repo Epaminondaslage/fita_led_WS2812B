@@ -1,5 +1,3 @@
-## Fita LED WS2812B
-
 # Fita LED WS2812B – LED Endereçável
 
 A **Fita de LED WS2812B** é um tipo de **fita de LED endereçável**, ou seja, cada LED pode ser controlado individualmente em termos de **cor e brilho**. Ideal para projetos de iluminação dinâmica, efeitos visuais, decorações interativas e automação residencial.
