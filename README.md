@@ -110,7 +110,7 @@ Sem esse ajuste de nível:
 
 ---
 
-## ✅ Soluções recomendadas
+## ✅ Formas de conexão 
 
 ### 1. Módulo Conversor de Nível Lógico Bidirecional (MOSFET BSS138)
 
