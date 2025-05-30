@@ -131,7 +131,7 @@ Sem esse ajuste de nível:
 - Exemplo: Resistores de 1kΩ e 2kΩ.
 - Reduz tensão de 5V para 3,3V, mas **não funciona bem para sinais rápidos** como os da WS2812B.
 
-### 4. 🔌 Usando o Conversor de Nível Lógico IIC/I2C com WS2812B e ESP32
+### 4. 🔌 Usando o Conversor de Nível Lógico IIC/I2C 
 
 O módulo conhecido como **Conversor de Nível Lógico IIC/I2C bidirecional 5V ↔ 3.3V** (geralmente baseado no **MOSFET BSS138**) pode ser usado com segurança para **controlar fitas WS2812B** usando microcontroladores de 3,3V como o **ESP32**.
 
