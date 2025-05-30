@@ -295,7 +295,9 @@ O **Tasmota** é um firmware open-source altamente flexível para dispositivos E
 
 [📘 Documentação Tasmota: WS2812B e WS2813 - Diagrama e Osciloscópio](https://tasmota.github.io/docs/WS2812B-and-WS2813/#about-this-circuit-diagram-and-the-oscilloscope-traces)
 
-[📘 Documentação instalação Tasmota](https://github.com/Epaminondaslage/# 🎛️ Controle de Fita LED WS2812B com ESP32 
+[📘 Documentação instalação Tasmota](https://github.com/Epaminondaslage)
+
+# 🎛️ Controle de Fita LED WS2812B com ESP32 
 
 ## 🔌 Por que usar Tasmota com a WS2812B?
 
