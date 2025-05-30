@@ -140,25 +140,35 @@ Sem esse ajuste de nível:
 - Exemplo: Resistores de 1kΩ e 2kΩ.
 - Reduz tensão de 5V para 3,3V, mas **não funciona bem para sinais rápidos** como os da WS2812B.
 
+### 4. 🔌 Usando o Conversor de Nível Lógico IIC/I2C com WS2812B e ESP32
+
+O módulo conhecido como **Conversor de Nível Lógico IIC/I2C bidirecional 5V ↔ 3.3V** (geralmente baseado no **MOSFET BSS138**) pode ser usado com segurança para **controlar fitas WS2812B** usando microcontroladores de 3,3V como o **ESP32**.
+
+<p align="center">
+  <img src="conversor.jpg" alt="conversor lógico" style="width:20%;">
+</p>
+
+Apesar de rotulado como “I2C”, esse módulo é um **conversor de nível lógico genérico**, ideal para sinais digitais de entrada/saída. O sinal da WS2812B:
+
+- É **digital**
+- É **unidirecional** (do ESP32 para a fita)
+- Opera em **alta frequência (~800kHz)**
+
 ---
 
 ## 🔌 Exemplo de ligação
 
-| Pino do Conversor | Conecta a                      |
-|-------------------|--------------------------------|
-| HV                | 5V da fonte externa            |
-| LV                | 3,3V do ESP32                  |
-| GND               | GND comum entre fonte e ESP32  |
-| LV1               | GPIO do ESP32 (ex: GPIO5)      |
-| HV1               | DIN da fita WS2812B            |
+Use apenas **um canal** do conversor. Exemplo usando o canal **LV1/HV1**:
 
----
+| Pino no Conversor | Conectar a                  |
+|-------------------|-----------------------------|
+| **HV**            | 5V da fonte da fita         |
+| **LV**            | 3,3V do ESP32               |
+| **GND**           | GND comum (ESP32 e fonte)   |
+| **LV1**           | GPIO do ESP32 (ex: GPIO5)   |
+| **HV1**           | DIN da fita WS2812B         |
 
-## 💡 Dica
-
-Em alguns casos a fita WS2812B funciona com sinal de 3,3V diretamente, mas **isso não é garantido** e **pode falhar dependendo da fita, comprimento ou temperatura**.
-
-**Sempre que possível, use um conversor.**
+> Os outros canais (LV2/HV2, etc.) não precisam ser usados.
 
 ---
 
