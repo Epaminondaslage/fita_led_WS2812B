@@ -254,9 +254,11 @@ Conectado! IP: 192.168.0.105
 
 Instale via: **Sketch > Incluir Biblioteca > Gerenciar Bibliotecas**
 
-# 💡  Uso da Fita WS2812B com Tasmota
+🎛️ II - Controle da Fita WS2812B com firmware Tasmota
 
 O **Tasmota** é um firmware open-source altamente flexível para dispositivos ESP8266/ESP32, permitindo controle local e remoto via MQTT, HTTP, serial e interface web. Ele suporta uma ampla gama de sensores, relés e também **dispositivos de iluminação RGB endereçáveis**, como a **fita WS2812B**.
+
+[📘 Site Tasmota](https://tasmota.github.io)
 
 [📘 Documentação Tasmota: WS2812B e WS2813 - Diagrama e Osciloscópio](https://tasmota.github.io/docs/WS2812B-and-WS2813/#about-this-circuit-diagram-and-the-oscilloscope-traces)
 
