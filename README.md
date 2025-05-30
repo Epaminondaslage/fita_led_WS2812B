@@ -259,11 +259,9 @@ Instale via: **Sketch > Incluir Biblioteca > Gerenciar Bibliotecas**
 O **Tasmota** é um firmware open-source altamente flexível para dispositivos ESP8266/ESP32, permitindo controle local e remoto via MQTT, HTTP, serial e interface web. Ele suporta uma ampla gama de sensores, relés e também **dispositivos de iluminação RGB endereçáveis**, como a **fita WS2812B**.
 
 [📘 Documentação Tasmota: WS2812B e WS2813 - Diagrama e Osciloscópio](https://tasmota.github.io/docs/WS2812B-and-WS2813/#about-this-circuit-diagram-and-the-oscilloscope-traces)
----
 
-## 🎯 O que é a WS2812B?
+[📘 Documentação instalação Tasmota](https://github.com/Epaminondaslage/Tasmota)
 
-A WS2812B é uma fita de LEDs RGB **endereçáveis individualmente** — cada LED possui um chip integrado que interpreta sinais digitais para controlar cor e brilho. Isso permite criar animações e efeitos complexos com apenas **um único fio de dados**.
 
 ---
 
