@@ -4,6 +4,9 @@ Este projeto utiliza um ESP32 para controlar uma fita de LED WS2812B (NeoPixel) 
 
 [Fita LED WS2812B RGB 5V no AliExpress](https://pt.aliexpress.com/item/1005007989431712.html?srcSns=sns_Copy&spreadType=socialShare&bizType=ProductDetail&social_params=21851383776&aff_fcid=6abde431cf2c43d78abba54f8fe92092-1748561979491-00334-_mq1jYKF&tt=MG&aff_fsk=_mq1jYKF&aff_platform=default&sk=_mq1jYKF&aff_trace_key=6abde431cf2c43d78abba54f8fe92092-1748561979491-00334-_mq1jYKF&shareId=21851383776&businessType=ProductDetail&platform=AE&terminal_id=fb8fc465198c41748a4019f7189cdc36&afSmartRedirect=y)
 
+<p align="center">
+  <img src="fita.jpg" alt="fita" style="width:50%;">
+</p>
 ---
 ## 📦 Requisitos
 
@@ -30,6 +33,10 @@ Este projeto utiliza um ESP32 para controlar uma fita de LED WS2812B (NeoPixel) 
 ---
 
 ## 🛠️ Ligações básicas
+
+<p align="center">
+  <img src="diagrama_conexao.jpg" alt="Diagrama de Conexão" style="width:50%;">
+</p>
 
 | Fita WS2812B | Função                            |
 |--------------|-----------------------------------|
