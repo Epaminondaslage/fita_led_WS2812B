@@ -1,6 +1,5 @@
-# 🎛️ Controle de Fita LED WS2812B com ESP32 via Página Web
 
-Este projeto utiliza um ESP32 para controlar uma fita de LED WS2812B (NeoPixel) através de uma página web responsiva, com botões para selecionar efeitos, ajustar a velocidade e o brilho em tempo real utilizando requisições AJAX.
+Este repositorio mostra as formas de  utilizar um ESP32 para controlar uma fita de LED WS2812B (NeoPixel) através de uma página web responsiva, com botões para selecionar efeitos, ajustar a velocidade e o brilho em tempo real utilizando requisições AJAX ou o seu controle por firmware TASMOTA.
 
 [Fita LED WS2812B RGB 5V no AliExpress](https://pt.aliexpress.com/item/1005007989431712.html?srcSns=sns_Copy&spreadType=socialShare&bizType=ProductDetail&social_params=21851383776&aff_fcid=6abde431cf2c43d78abba54f8fe92092-1748561979491-00334-_mq1jYKF&tt=MG&aff_fsk=_mq1jYKF&aff_platform=default&sk=_mq1jYKF&aff_trace_key=6abde431cf2c43d78abba54f8fe92092-1748561979491-00334-_mq1jYKF&shareId=21851383776&businessType=ProductDetail&platform=AE&terminal_id=fb8fc465198c41748a4019f7189cdc36&afSmartRedirect=y)
 
@@ -9,6 +8,7 @@ Este projeto utiliza um ESP32 para controlar uma fita de LED WS2812B (NeoPixel) 
 </p>
 
 ---
+# 🎛️ I - Controle de Fita LED WS2812B com ESP32 
 
 ## 📦 Requisitos
 
@@ -260,10 +260,7 @@ O **Tasmota** é um firmware open-source altamente flexível para dispositivos E
 
 [📘 Documentação Tasmota: WS2812B e WS2813 - Diagrama e Osciloscópio](https://tasmota.github.io/docs/WS2812B-and-WS2813/#about-this-circuit-diagram-and-the-oscilloscope-traces)
 
-[📘 Documentação instalação Tasmota](https://github.com/Epaminondaslage/Tasmota)
-
-
----
+[📘 Documentação instalação Tasmota](https://github.com/Epaminondaslage/# 🎛️ Controle de Fita LED WS2812B com ESP32 
 
 ## 🔌 Por que usar Tasmota com a WS2812B?
 
