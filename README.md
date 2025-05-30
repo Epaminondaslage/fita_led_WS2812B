@@ -88,7 +88,7 @@ Este repositorio mostra as formas de  utilizar um ESP32 para controlar uma fita 
 - Pode exigir capacitor e resistor para proteção
 ---
 
-# 🔄 Ii - Conversor de Nível Lógico para WS2812B com ESP32
+# 🔄 II - Conversor de Nível Lógico para WS2812B com ESP32
 
 ## 📌 O que é um conversor de nível lógico?
 
