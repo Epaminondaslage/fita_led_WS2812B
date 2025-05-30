@@ -10,10 +10,10 @@ Este repositorio mostra as formas de  utilizar um ESP32 para controlar uma fita 
 ## 📑 Índice
 
 - [I - Introdução](#i---introdução)
-- [II - Fita LED WS2812B](#---ii-Fita-led-ws2812b)
-- [III - Conversor de Nível Lógico para WS2812B com ESP32](#-iii---conversor-de-nível-lógico-para-ws2812b-com-esp32)
+- [II - Fita LED WS2812B](#ii-Fita-led-ws2812b)
+- [III - Conversor de Nível Lógico para WS2812B com ESP32](#iii---conversor-de-nível-lógico-para-ws2812b-com-esp32)
 - [IV - Projeto para que o ESP32-WROOM controle a fita WS2812B por uma página web, com um botão HTML que alterna entre os efeitos (arco-íris, correr, teclado).](#iv---projeto-para-que-o-esp32-wroom-controle-a-fita-ws2812b-por-uma-página-web-com-um-botão-html-que-alterna-entre-os-efeitos-arco-íris-correr-teclado)
-- [V - Controle da Fita WS2812B com firmware Tasmota](#-v---controle-da-fita-ws2812b-com-firmware-tasmota)
+- [V - Controle da Fita WS2812B com firmware Tasmota](#v---controle-da-fita-ws2812b-com-firmware-tasmota)
 
 
 ---
