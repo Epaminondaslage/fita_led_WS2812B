@@ -88,7 +88,7 @@ Este repositorio mostra as formas de  utilizar um ESP32 para controlar uma fita 
 - Pode exigir capacitor e resistor para proteção
 ---
 
-# 🔄 Conversor de Nível Lógico para WS2812B com ESP32
+# 🔄 Ii - Conversor de Nível Lógico para WS2812B com ESP32
 
 ## 📌 O que é um conversor de nível lógico?
 
@@ -163,7 +163,7 @@ Use apenas **um canal** do conversor. Exemplo usando o canal **LV1/HV1**:
 
 ---
 
-# Projeto para que o ESP32-WROOM controle a fita WS2812B por uma página web, com um botão HTML que alterna entre os efeitos (arco-íris, correr, teclado).
+# III- Projeto para que o ESP32-WROOM controle a fita WS2812B por uma página web, com um botão HTML que alterna entre os efeitos (arco-íris, correr, teclado).
 
 ## 📦 Requisitos
 
@@ -258,7 +258,7 @@ Instale via: **Sketch > Incluir Biblioteca > Gerenciar Bibliotecas**
 
 ---
 
-🎛️ II - Controle da Fita WS2812B com firmware Tasmota
+🎛️ IV - Controle da Fita WS2812B com firmware Tasmota
 
 O **Tasmota** é um firmware open-source altamente flexível para dispositivos ESP8266/ESP32, permitindo controle local e remoto via MQTT, HTTP, serial e interface web. Ele suporta uma ampla gama de sensores, relés e também **dispositivos de iluminação RGB endereçáveis**, como a **fita WS2812B**.
 
