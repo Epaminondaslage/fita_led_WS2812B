@@ -7,6 +7,15 @@ Este repositorio mostra as formas de  utilizar um ESP32 para controlar uma fita 
   <img src="fita.jpg" alt="fita" style="width:30%;">
 </p>
 
+## 📑 Índice
+
+- [I - Introdução](#i---introdução)
+- [II - Fita LED WS2812B](#---ii-Fita-led-ws2812b)
+- [III - Conversor de Nível Lógico para WS2812B com ESP32](#-iii---conversor-de-nível-lógico-para-ws2812b-com-esp32)
+- [IV - Projeto para que o ESP32-WROOM controle a fita WS2812B por uma página web, com um botão HTML que alterna entre os efeitos (arco-íris, correr, teclado).](#iv---projeto-para-que-o-esp32-wroom-controle-a-fita-ws2812b-por-uma-página-web-com-um-botão-html-que-alterna-entre-os-efeitos-arco-íris-correr-teclado)
+- [V - Controle da Fita WS2812B com firmware Tasmota](#-v---controle-da-fita-ws2812b-com-firmware-tasmota)
+
+
 ---
 
 # I - Introdução
@@ -28,7 +37,7 @@ Assim sendo  é possível configurar a fita diretamente pela interface web e con
 ---
 
 
-# 🎛️ I - Fita LED WS2812B
+# II - Fita LED WS2812B
 
 
 ## 🔧 Características principais
@@ -108,7 +117,7 @@ Assim sendo  é possível configurar a fita diretamente pela interface web e con
 - Pode exigir capacitor e resistor para proteção
 ---
 
-# 🔄 II - Conversor de Nível Lógico para WS2812B com ESP32
+# III - Conversor de Nível Lógico para WS2812B com ESP32
 
 ## 📌 O que é um conversor de nível lógico?
 
@@ -183,7 +192,7 @@ Use apenas **um canal** do conversor. Exemplo usando o canal **LV1/HV1**:
 
 ---
 
-# III- Projeto para que o ESP32-WROOM controle a fita WS2812B por uma página web, com um botão HTML que alterna entre os efeitos (arco-íris, correr, teclado).
+# IV - Projeto para que o ESP32-WROOM controle a fita WS2812B por uma página web, com um botão HTML que alterna entre os efeitos (arco-íris, correr, teclado).
 
 ## 📦 Requisitos
 
@@ -278,7 +287,7 @@ Instale via: **Sketch > Incluir Biblioteca > Gerenciar Bibliotecas**
 
 ---
 
-🎛️ IV - Controle da Fita WS2812B com firmware Tasmota
+# V - Controle da Fita WS2812B com firmware Tasmota
 
 O **Tasmota** é um firmware open-source altamente flexível para dispositivos ESP8266/ESP32, permitindo controle local e remoto via MQTT, HTTP, serial e interface web. Ele suporta uma ampla gama de sensores, relés e também **dispositivos de iluminação RGB endereçáveis**, como a **fita WS2812B**.
 
