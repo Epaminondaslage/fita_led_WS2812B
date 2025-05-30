@@ -277,6 +277,9 @@ Integrar a WS2812B com Tasmota permite:
 <p align="center">
   <img src="tasmota_WS_2812B.png" alt="conversor lógico" style="width:20%;">
 </p>
+<p align="center">
+  <img src="ws2813b_config.png" alt="configuracao de porta" style="width:20%;">
+</p>
 
 
 
