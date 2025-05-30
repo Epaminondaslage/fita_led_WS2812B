@@ -8,17 +8,8 @@ Este repositorio mostra as formas de  utilizar um ESP32 para controlar uma fita 
 </p>
 
 ---
-# 🎛️ I - Controle de Fita LED WS2812B com ESP32 
+# 🎛️ I - Fita LED WS2812B
 
-## 📦 Requisitos
-
-- ESP32-WROOM
-- Fita LED WS2812B (5V)
-- Fonte externa 5V (capaz de fornecer corrente suficiente)
-- Arduino IDE com suporte à placa ESP32
-- Biblioteca: [Adafruit NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel)
-
---- 
 
 ## 🔧 Características principais
 
@@ -174,7 +165,18 @@ Use apenas **um canal** do conversor. Exemplo usando o canal **LV1/HV1**:
 
 # Projeto para que o ESP32-WROOM controle a fita WS2812B por uma página web, com um botão HTML que alterna entre os efeitos (arco-íris, correr, teclado).
 
-## 🔧 Conexões da fita ao ESP
+## 📦 Requisitos
+
+- ESP32-WROOM
+- Fita LED WS2812B (5V)
+- Conversor de sinis lógicos 
+- Fonte externa 5V (capaz de fornecer corrente suficiente)
+- Arduino IDE com suporte à placa ESP32
+- Biblioteca: [Adafruit NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel)
+
+---
+
+## 🔧 Conexões da fita ao ESP32
 
 | Fita WS2812B | ESP32                  |
 |--------------|------------------------|
@@ -253,6 +255,8 @@ Conectado! IP: 192.168.0.105
 - Adafruit NeoPixel
 
 Instale via: **Sketch > Incluir Biblioteca > Gerenciar Bibliotecas**
+
+---
 
 🎛️ II - Controle da Fita WS2812B com firmware Tasmota
 
