@@ -11,40 +11,19 @@ Este repositorio mostra as formas de  utilizar um ESP32 para controlar uma fita 
 
 # I - Introdução
 
-a forma mais somples de controlar esta fita de led endereçável é atraves do controlados RF. este modo nao o objeto deste repositorio mas estes controladores sao de baixo custo e facilmente encontrados no mercado. 
+A forma mais simples de controlar esta fita de led endereçável é através do controlador RF. Esta forma de controle não é  o objeto deste repositório, mas estes controladores são de baixo custo e facilmente encontrados no mercado. 
 
 O controlador RF compacto foi desenvolvido para o controle de fitas de LED endereçáveis, permitindo a seleção remota de múltiplos efeitos visuais com praticidade e versatilidade. Compatível com os principais chips de controle digital como WS2812B, APA102 e similares, o dispositivo suporta centenas de modos pré-programados, ajuste de velocidade, número de pixels e armazenamento automático do último estado utilizado.  
 
+<p align="center">
+  <img src="fita.jpg" alt="fita" style="width:30%;">
+</p>
+
 Sua operação é feita via controle remoto por rádio frequência (433,92 MHz), com alcance de até 20 metros e alta sensibilidade. O controlador é ideal para projetos de iluminação decorativa, efeitos visuais dinâmicos e sistemas de automação residencial, sendo fácil de instalar e alimentar com tensões entre 5V e 24V DC.  
 
-# Descrição Técnica – Controlador RF para Fitas de LED Endereçáveis
+O uso de fitas de LED endereçáveis  com microcontroladores ESP32  permite criar sistemas de iluminação altamente personalizáveis e interativos.  Para simplificar a integração com redes Wi-Fi e plataformas de automação, pode-se utilizar o firmware Tasmota, que transforma o microcontrolador em um dispositivo configurável via navegador, com suporte embutido para efeitos, comandos MQTT e atualizações OTA. 
 
-## Especificações Elétricas
-- **Tensão de Alimentação:** DC 5 a 24V
-
-## Compatibilidade com Protocolos (ICs)
-- APA102  
-- WS2812B  
-- WS2811  
-- WS2801  
-- LPD8806  
-- SK6812 (incluindo RGBW)
-
-## Funcionalidades
-- Suporte a até **316 modos de efeitos**
-- Mais de **300 efeitos visuais pré-programados.
-
-## Controle
-- **Controle remoto via RF (433.92 MHz)**
-- **Alcance do controle remoto:** 10 a 20 metros
-- **Alta sensibilidade à recepção de sinal**
-- Função de:
-  - Reprodução automática de efeitos
-  - Ajuste do número de pixels
-  - Ajuste da velocidade de reprodução
-  - Desligamento automático com salvamento de estado
-
-## Esquema de Ligação (Exemplo para WS2812B)
+Assim sendo  é possível configurar a fita diretamente pela interface web e controlá-la via comandos MQTT, HTTP ou por integração automática com sistemas como Home Assistant, permitindo acionamento por horários, sensores ou comandos de voz. Alternativamente, quem usa código próprio no ESP32 pode desenvolver lógicas customizadas e publicar mensagens via MQTT, mantendo compatibilidade com Home Assistant ou Node-RED. Essa arquitetura híbrida oferece flexibilidade, escalabilidade e confiabilidade tanto para automações residenciais quanto para instalações profissionais, com controle total da iluminação, consumo e resposta em tempo real.
 
 ---
 
