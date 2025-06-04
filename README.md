@@ -39,11 +39,13 @@ O controlador RF compacto foi desenvolvido para o controle de fitas de LED ender
   <img src="Controlador.png" alt="controlador RF" style="width:30%;">
 </p>
 
-Sua operação é feita via controle remoto por rádio frequência (433,92 MHz), com alcance de até 20 metros e alta sensibilidade. O controlador é ideal para projetos de iluminação decorativa, efeitos visuais dinâmicos e sistemas de automação residencial, sendo fácil de instalar e alimentar com tensões entre 5V e 24V DC.  
+O uso de fitas de LED endereçáveis com microcontroladores **ESP32** ou **Arduino** permite criar sistemas de iluminação altamente personalizáveis e interativos.
 
-O uso de fitas de LED endereçáveis  com microcontroladores ESP32  permite criar sistemas de iluminação altamente personalizáveis e interativos.  Para simplificar a integração com redes Wi-Fi e plataformas de automação, pode-se utilizar o firmware Tasmota, que transforma o microcontrolador em um dispositivo configurável via navegador, com suporte embutido para efeitos, comandos MQTT e atualizações OTA. 
+Para facilitar a integração com redes Wi-Fi e plataformas de automação como **Home Assistant** ou **Node-RED**, pode-se utilizar o firmware **[Tasmota](https://tasmota.github.io/)**. Ele transforma o microcontrolador em um **dispositivo inteligente pronto para uso**, acessível via navegador, com suporte embutido para **efeitos de luz, comandos MQTT, HTTP REST e atualizações OTA**.
 
-Assim sendo  é possível configurar a fita diretamente pela interface web e controlá-la via comandos MQTT, HTTP ou por integração automática com sistemas como Home Assistant, permitindo acionamento por horários, sensores ou comandos de voz. Alternativamente, quem usa código próprio no ESP32 pode desenvolver lógicas customizadas e publicar mensagens via MQTT, mantendo compatibilidade com Home Assistant ou Node-RED. Essa arquitetura híbrida oferece flexibilidade, escalabilidade e confiabilidade tanto para automações residenciais quanto para instalações profissionais, com controle total da iluminação, consumo e resposta em tempo real.
+Com o Tasmota, é possível configurar o comportamento da fita WS2812B diretamente pela interface web, definindo cores, modos animados (schemes), brilho, velocidade e horários de acionamento. Além disso, o dispositivo pode ser controlado **remotamente via MQTT**, **HTTP GET/POST** ou até mesmo por **comandos de voz**, através da integração com assistentes virtuais como Alexa ou Google Assistant.
+
+Alternativamente, quem opta por programar diretamente o **ESP32** ou o **Arduino UNO R4 WiFi** pode implementar lógicas personalizadas em C++ com total liberdade, incluindo efeitos customizados, sensores e interações com interfaces web. A comunicação com plataformas de automação pode ser mantida via **publicação MQTT**, permitindo monitoramento e controle pela rede.
 
 ---
 
