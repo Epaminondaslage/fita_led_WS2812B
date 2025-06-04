@@ -5,12 +5,14 @@
 
 ## 📑 Índice
 
-- [I - Introdução](#i---introdução)
-- [II - Fita LED WS2812B](#ii---Fita-led-ws2812b)
-- [III - Conversor de Nível Lógico para WS2812B com ESP32](#iii---conversor-de-nível-lógico-para-ws2812b-com-esp32)
-- [IV - Projeto para que o ESP32-WROOM controle a fita WS2812B por uma página web, com um botão HTML que alterna entre os efeitos (arco-íris, correr, teclado).](#iv---projeto-para-que-o-esp32-wroom-controle-a-fita-ws2812b-por-uma-página-web-com-um-botão-html-que-alterna-entre-os-efeitos-arco-íris-correr-teclado)
-- [V - Controle da Fita WS2812B com firmware Tasmota](#v---controle-da-fita-ws2812b-com-firmware-tasmota)
-- [VI - Fita de LED com Arduino UNO R4 WIFI](#vi---fita-de-led-com-arduino-uno-r4-wifi)
+### 📑 Índice
+
+- [I. Introdução](#i-introdução)
+- [II. Fita LED WS2812B](#ii-fita-led-ws2812b)
+- [III. Conversor de Nível Lógico com ESP32](#iii-conversor-de-nível-lógico-com-esp32)
+- [IV. Controle da Fita WS2812B via Web com ESP32-WROOM](#iv-controle-da-fita-ws2812b-via-web-com-esp32-wroom)
+- [V. Controle da Fita WS2812B com Tasmota](#v-controle-da-fita-ws2812b-com-tasmota)
+- [VI. Controle da Fita WS2812B com Arduino UNO R4 WiFi](#vi-controle-da-fita-ws2812b-com-arduino-uno-r4-wifi)
 
 Este repositório demonstra como controlar uma fita de LED WS2812B (NeoPixel) utilizando:
 
@@ -29,7 +31,7 @@ Outra forma  possível é utilizar  o controle via **firmware TASMOTA**, ideal p
 
 ---
 
-# I - Introdução
+## I. Introdução
 
 A forma mais simples de controlar esta fita de led endereçável é através do controlador RF. Esta forma de controle não é  o objeto deste repositório, mas estes controladores são de baixo custo e facilmente encontrados no mercado. 
 
@@ -49,7 +51,7 @@ Alternativamente, quem opta por programar diretamente o **ESP32** ou o **Arduino
 
 ---
 
-# II - Fita LED WS2812B
+## II. Fita LED WS2812B
 
 <p align="center">
   <img src="fita.jpg" alt="fita" style="width:30%;">
@@ -134,7 +136,7 @@ Alternativamente, quem opta por programar diretamente o **ESP32** ou o **Arduino
 - Pode exigir capacitor e resistor para proteção
 ---
 
-# III - Conversor de Nível Lógico para WS2812B com ESP32
+## III. Conversor de Nível Lógico com ESP32
 
 ## 📌 O que é um conversor de nível lógico?
 
@@ -209,7 +211,7 @@ Use apenas **um canal** do conversor. Exemplo usando o canal **LV1/HV1**:
 
 ---
 
-# IV - Projeto para que o ESP32-WROOM controle a fita WS2812B por uma página web, com um botão HTML que alterna entre os efeitos (arco-íris, correr, teclado).
+## IV. Controle da Fita WS2812B via Web com ESP32-WROOM
 
 ## 📦 Requisitos
 
@@ -304,7 +306,7 @@ Instale via: **Sketch > Incluir Biblioteca > Gerenciar Bibliotecas**
 
 ---
 
-# V - Controle da Fita WS2812B com firmware Tasmota
+## V. Controle da Fita WS2812B com Tasmota
 
 O **Tasmota** é um firmware open-source altamente flexível para dispositivos ESP8266/ESP32, permitindo controle local e remoto via MQTT, HTTP, serial e interface web. Ele suporta uma ampla gama de sensores, relés e também **dispositivos de iluminação RGB endereçáveis**, como a **fita WS2812B**.
 
@@ -441,7 +443,7 @@ Integrar a WS2812B com Tasmota permite:
 - Fazer atualizações OTA e monitorar o status do dispositivo.
 
 
-# VI - Fita de LED com Arduino UNO R4 WIFI
+## VI. Controle da Fita WS2812B com Arduino UNO R4 WiFi
 
 Este projeto utiliza o **Arduino UNO R4 WiFi** para controlar uma fita de LED **WS2812B (NeoPixel)**, com uma interface web moderna e responsiva. Os efeitos são selecionados via Wi-Fi usando botões interativos e são exibidos simultaneamente na **matriz de LED 12x8 integrada** da placa. A comunicação entre a página web e o microcontrolador é feita via **requisições AJAX**, sem recarregar a página.
 
