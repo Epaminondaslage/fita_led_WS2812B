@@ -5,7 +5,21 @@
 
 # Fita LED WS2812B
 
-Este repositorio mostra as formas de  utilizar um ESP32 para controlar uma fita de LED WS2812B (NeoPixel) através de uma página web responsiva, com botões para selecionar efeitos, ajustar a velocidade e o brilho em tempo real utilizando requisições AJAX ou o seu controle por firmware TASMOTA.
+Este repositório demonstra como controlar uma fita de LED WS2812B (NeoPixel) utilizando:
+
+- Um **ESP32** com Wi-Fi integrado
+- Ou um **Arduino UNO R4 WiFi** com sua matriz de LED on-board e suporte a Wi-Fi
+
+Ambas as plataformas apresentam:
+
+- Uma **interface web responsiva**
+- **Botões interativos via AJAX** para:
+  - Selecionar efeitos de iluminação
+  - Ajustar a velocidade das animações
+  - Controlar o brilho dos LEDs
+
+Além disso, é possível configurar o controle via **firmware TASMOTA**, ideal para integração com sistemas MQTT e automação residencial.
+
 
 [Fita LED WS2812B RGB 5V no AliExpress](https://pt.aliexpress.com/item/1005007989431712.html?srcSns=sns_Copy&spreadType=socialShare&bizType=ProductDetail&social_params=21851383776&aff_fcid=6abde431cf2c43d78abba54f8fe92092-1748561979491-00334-_mq1jYKF&tt=MG&aff_fsk=_mq1jYKF&aff_platform=default&sk=_mq1jYKF&aff_trace_key=6abde431cf2c43d78abba54f8fe92092-1748561979491-00334-_mq1jYKF&shareId=21851383776&businessType=ProductDetail&platform=AE&terminal_id=fb8fc465198c41748a4019f7189cdc36&afSmartRedirect=y)
 
