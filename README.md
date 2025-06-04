@@ -211,7 +211,18 @@ Use apenas **um canal** do conversor. Exemplo usando o canal **LV1/HV1**:
 
 ## IV. Controle da Fita WS2812B via Web com ESP32-WROOM
 
-## 📦 Requisitos
+## O ESP32-WROOM
+
+O **ESP32-WROOM** é um dos módulos da família ESP32 da Espressif, amplamente utilizado em projetos de automação, IoT e controle de dispositivos inteligentes. Ele combina um processador dual-core de 32 bits com clock de até 240 MHz, conectividade **Wi-Fi** e **Bluetooth** integradas, e um conjunto robusto de GPIOs multifuncionais. Esse módulo é ideal para aplicações que exigem desempenho, baixo consumo de energia e comunicação sem fio.
+
+Possui suporte a protocolos como **MQTT**, **HTTP**, e bibliotecas como **ESPAsyncWebServer** ou **FastLED**, o ESP32-WROOM é capaz de controlar fitas WS2812B com alta eficiência e resposta em tempo real, tornando-se uma  escolha para sistemas de iluminação inteligentes, dashboards web, automação residencial e integração com plataformas como **Home Assistant** e **Node-RED**.
+
+<p align="center">
+  <img src="esp32.jpg" alt="ESP32" style="width:20%;">
+</p>
+
+
+## 📦 Requisitos do Projeto
 
 - ESP32-WROOM
 - Fita LED WS2812B (5V)
