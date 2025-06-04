@@ -34,7 +34,7 @@ Além disso, é possível configurar o controle via **firmware TASMOTA**, ideal 
 - [III - Conversor de Nível Lógico para WS2812B com ESP32](#iii---conversor-de-nível-lógico-para-ws2812b-com-esp32)
 - [IV - Projeto para que o ESP32-WROOM controle a fita WS2812B por uma página web, com um botão HTML que alterna entre os efeitos (arco-íris, correr, teclado).](#iv---projeto-para-que-o-esp32-wroom-controle-a-fita-ws2812b-por-uma-página-web-com-um-botão-html-que-alterna-entre-os-efeitos-arco-íris-correr-teclado)
 - [V - Controle da Fita WS2812B com firmware Tasmota](#v---controle-da-fita-ws2812b-com-firmware-tasmota)
-
+- [VI - Fita de LED com Arduino UNO R4 WIFI](#vi---fita-de-led-com-arduino-uno-r4-wifi)
 
 ---
 
@@ -332,6 +332,64 @@ Integrar a WS2812B com Tasmota permite:
 <p align="center">
   <img src="ws2813b_config.png" alt="configuracao de porta" style="width:20%;">
 </p>
+
+# VI - Fita de LED com Arduino UNO R4 WIFI
+
+![uno_r4.jpg](Uno R4)
+
+ **UNO R4 WiFi**   Inclui  **Wi-Fi, Bluetooth**, **LED Matrix**, **RTC** e **modo WebUSB**
+
+---
+
+## 🔧 Especificações técnicas 
+
+| Item                      | Detalhes                                 |
+|---------------------------|------------------------------------------|
+| **Microcontrolador**      | Renesas RA4M1 ARM Cortex-M4 (48 MHz)     |
+| **Memória Flash**         | 256 KB                                   |
+| **SRAM**                  | 32 KB                                    |
+| **Tensão de operação**    | 5V (compatível com shields UNO)          |
+| **GPIOs**                 | 14 digitais, 6 analógicos, PWM, UART, I2C, SPI |
+| **Tensão lógica dos pinos** | 5V (diferente do ESP32, que é 3.3V)       |
+| **Porta USB**             | USB-C (com suporte a WebSerial/WebUSB)   |
+
+---
+
+## 🌐 Recursos extras do UNO R4 **WiFi**
+
+| Recurso                  | Descrição                                  |
+|--------------------------|---------------------------------------------|
+| **Wi-Fi** e **Bluetooth**| Chip ESP32-S3 como co-processador de conectividade |
+| **LED Matrix 12x8**      | Matriz de LED integrada controlável via I2C |
+| **RTC (Relógio em tempo real)** | Alimentado com supercap para manter hora |
+| **Memória Flash externa**| Para armazenar arquivos com LittleFS (ainda limitado no IDE Arduino) |
+
+---
+
+## 🔋 Comparativo: UNO R3 vs UNO R4
+
+| Recurso                | UNO R3          | UNO R4 WiFi            |
+|------------------------|------------------|-------------------------|
+| MCU                    | ATmega328P (8-bit) | Renesas RA4M1 (32-bit)  |
+| Clock                 | 16 MHz           | 48 MHz                 |
+| Flash                 | 32 KB            | 256 KB                 |
+| SRAM                  | 2 KB             | 32 KB                  |
+| Conectividade         | Nenhuma          | Wi-Fi + Bluetooth      |
+| Tensão lógica         | 5V               | 5V                     |
+| Matriz de LEDs        | Não              | Sim                    |
+| Compatível com shields antigos | Sim      | Sim                    |
+
+---
+
+## 🚀 Vantagens do UNO R4?
+
+- **Muito mais poder de processamento**
+- **Wi-Fi integrado**
+- **Compatível com a IDE Arduino**
+- **Nova USB-C com suporte WebUSB / WebSerial**
+- **Display LED e RTC integrados**
+
+---
 
 
 
