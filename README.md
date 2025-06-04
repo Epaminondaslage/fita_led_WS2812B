@@ -14,13 +14,13 @@
 
 Este repositório demonstra como controlar uma fita de LED WS2812B (NeoPixel) utilizando:
 
-- Um **ESP32** com Wi-Fi integrado
+- Um **ESP32** com Wi-Fi integrado,
 - Ou um **Arduino UNO R4 WiFi** com sua matriz de LED on-board e suporte a Wi-Fi
 
 Ambas as plataformas apresentam:
 
-- Uma **interface web responsiva**
-- **Botões interativos via AJAX** para:
+  - Uma **interface web responsiva**
+  - **Botões interativos via AJAX** para:
   - Selecionar efeitos de iluminação
   - Ajustar a velocidade das animações
   - Controlar o brilho dos LEDs
