@@ -36,7 +36,7 @@ A forma mais simples de controlar esta fita de led endereçável é através do 
 O controlador RF compacto foi desenvolvido para o controle de fitas de LED endereçáveis, permitindo a seleção remota de múltiplos efeitos visuais com praticidade e versatilidade. Compatível com os principais chips de controle digital como WS2812B, APA102 e similares, o dispositivo suporta centenas de modos pré-programados, ajuste de velocidade, número de pixels e armazenamento automático do último estado utilizado.  
 
 <p align="center">
-  <img src="Controlador.png" alt="controlador RF" style="width:30%;">
+  <img src="Controlador.png" alt="controlador RF" style="width:20%;">
 </p>
 
 O uso de fitas de LED endereçáveis com microcontroladores **ESP32** ou **Arduino** permite criar sistemas de iluminação altamente personalizáveis e interativos.
