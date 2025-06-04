@@ -311,11 +311,128 @@ Instale via: **Sketch > Incluir Biblioteca > Gerenciar Bibliotecas**
 
 O **Tasmota** é um firmware open-source altamente flexível para dispositivos ESP8266/ESP32, permitindo controle local e remoto via MQTT, HTTP, serial e interface web. Ele suporta uma ampla gama de sensores, relés e também **dispositivos de iluminação RGB endereçáveis**, como a **fita WS2812B**.
 
+Este documento descreve como instalar e configurar o firmware **Tasmota** no **ESP32** para controlar uma fita de LED **WS2812B (NeoPixel)**, utilizando comandos via interface web ou MQTT.
+
 [📘 Site Tasmota](https://tasmota.github.io)
 
 [📘 Documentação Tasmota: WS2812B e WS2813 - Diagrama e Osciloscópio](https://tasmota.github.io/docs/WS2812B-and-WS2813/#about-this-circuit-diagram-and-the-oscilloscope-traces)
 
-[📘 Documentação instalação Tasmota](https://github.com/Epaminondaslage)
+[📘 Documentação instalação Tasmota para dispositivos em geral](https://github.com/Epaminondaslage)
+
+---
+
+## ✅ Microcontroladores Recomendados
+
+| Microcontrolador | Ideal para Tasmota com WS2812B? | Comentário                         |
+|------------------|-------------------------------|------------------------------------|
+| **ESP8266**      | ✅ Sim                         | Mais fácil, bem documentado        |
+| **ESP32**        | ✅ Sim                         | Mais LEDs, mais potência           |
+| Arduino UNO/R4   | ❌ Não                         | Não roda Tasmota                   |
+
+---
+
+## 🧭 Passo a passo: Instalar Tasmota no ESP32
+
+### 1. Opções de Instalação
+
+#### ✅ Opção A: Instalação via Navegador (recomendada)
+
+1. Conecte seu ESP32 via USB
+2. Acesse o site: [https://tasmota.github.io/install/](https://tasmota.github.io/install/)
+3. Clique em **“Connect”**
+4. Escolha sua porta USB e confirme
+5. Selecione a opção **“Tasmota32”** (ou Tasmota32-Lite, Tasmota32-NEO etc.)
+6. Clique em **“Install”**
+7. Aguarde o processo de gravação e reinicialização
+
+> ⚠️ Essa opção só funciona com navegadores **Chrome, Edge ou Chromium-based**, pois usa Web Serial API.
+
+---
+
+#### Opção B: Usando Tasmotizer
+
+1. Baixe: https://github.com/tasmota/tasmotizer/releases
+2. Conecte o ESP32 via USB
+3. Selecione a porta e o firmware (`tasmota32.bin`)
+4. Marque “Erase before flashing”
+5. Clique em “Tasmotize!”
+
+---
+
+#### Opção C: Usando esptool.py
+
+```bash
+pip install esptool
+esptool.py --port COM3 erase_flash
+esptool.py --chip esp32 --port COM3 write_flash -z 0x1000 tasmota32.bin
+```
+
+---
+
+### 2. Configurar o Wi-Fi
+
+Caso a instalação seja feita pelo site ( Opção A) a configuracao do WIFI faz parte do processo. Caso seja outras opçoes, abra seu celular em configuraçoes de WIFI e siga o procedimento abaixo.
+
+- Conecte-se à rede `Tasmota-XXXX`
+- Acesse `192.168.4.1` no navegador
+- Configure sua rede Wi-Fi local
+
+---
+
+### 3. Configurar o Módulo WS2812B
+
+1. Vá em `Configuration > Configure Module`
+2. Selecione: `Generic (18)`
+3. Configure um GPIO (ex: GPIO5) como `WS2812`
+4. Salve e reinicie
+
+<p align="center">
+  <img src="tasmota_WS_2812B.png" alt="tela Tasmota" style="width:20%;">
+</p>
+
+
+### 4. Comandos Tasmota para LEDs
+
+podem ser aplicados na console web do tasmota
+
+| Comando         | Função                                 |
+|-----------------|-----------------------------------------|
+| `Power ON`      | Liga os LEDs                            |
+| `Color 255,0,0` | Cor vermelha                            |
+| `Fade ON`       | Transição suave                         |
+| `Speed 1-20`    | Velocidade dos efeitos                  |
+| `Scheme 0-5`    | Seleção de efeitos animados             |
+| `Dimmer 0-100`  | Controle de brilho                      |
+
+---
+
+### 🔌 Esquema de Ligação
+
+| Fita WS2812B | ESP32       |
+|--------------|-------------|
+| DIN          | GPIO5 (ex)  |
+| GND          | GND         |
+| VCC          | Fonte 5V externa (não use o 5V da USB) |
+
+> Use resistor de 330Ω no fio de dados e capacitor de 1000µF entre VCC e GND.
+
+<p align="center">
+  <img src="ws2813b_config.png" alt="configuracao de porta" style="width:20%;">
+</p>
+
+
+## 🧪 Teste Rápido
+
+Envie estes comandos pela console da interface web Tasmota:
+
+```
+Color 0,0,255
+Scheme 4
+Speed 5
+Fade ON
+```
+
+---
 
 ## 🔌 Por que usar Tasmota com a WS2812B?
 
@@ -326,12 +443,6 @@ Integrar a WS2812B com Tasmota permite:
 - Usar comandos MQTT ou HTTP para definir cor, brilho e efeitos.
 - Fazer atualizações OTA e monitorar o status do dispositivo.
 
-<p align="center">
-  <img src="tasmota_WS_2812B.png" alt="conversor lógico" style="width:20%;">
-</p>
-<p align="center">
-  <img src="ws2813b_config.png" alt="configuracao de porta" style="width:20%;">
-</p>
 
 # VI - Fita de LED com Arduino UNO R4 WIFI
 
