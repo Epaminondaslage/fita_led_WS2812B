@@ -335,6 +335,11 @@ Integrar a WS2812B com Tasmota permite:
 
 # VI - Fita de LED com Arduino UNO R4 WIFI
 
+## Projeto: Controle de Fita WS2812B com Arduino UNO R4 WiFi
+
+Este projeto utiliza o **Arduino UNO R4 WiFi** para controlar uma fita de LED **WS2812B (NeoPixel)**, com uma interface web moderna e responsiva. Os efeitos são selecionados via Wi-Fi usando botões interativos e são exibidos simultaneamente na **matriz de LED 12x8 integrada** da placa. A comunicação entre a página web e o microcontrolador é feita via **requisições AJAX**, sem recarregar a página.
+
+---
 <p align="center">
   <img src="uno_r4.jpg" alt="uno" width="300" />
 </p>
@@ -343,7 +348,7 @@ Integrar a WS2812B com Tasmota permite:
 
 ---
 
-## 🔧 Especificações técnicas 
+## 🔧 Especificações técnicas do Hardware utilizado
 
 | Item                      | Detalhes                                 |
 |---------------------------|------------------------------------------|
@@ -382,14 +387,61 @@ Integrar a WS2812B com Tasmota permite:
 | Compatível com shields antigos | Sim      | Sim                    |
 
 ---
+## 🔧 Funcionalidades Principais do Software
 
-## 🚀 Vantagens do UNO R4?
+| Recurso                           | Descrição                                                                 |
+|----------------------------------|---------------------------------------------------------------------------|
+| 🎛️ Seis efeitos visuais          | Efeitos programados para a fita WS2812B                                   |
+| 📟 Matriz de LED integrada       | Exibe o nome do efeito atual na matriz 12x8 integrada                     |
+| 🌐 Servidor web embarcado        | Interface web é hospedada diretamente no Arduino UNO R4 WiFi              |
+| ⚡ Controle de brilho             | Ajuste em tempo real via interface                                        |
+| 🕒 Controle de velocidade         | Ajuste em tempo real via interface                                        |
+| 🔁 Troca de efeito em tempo real | A seleção é feita sem recarregar a página                                 |
+| 🔀 Comunicação via AJAX          | Troca de dados assíncrona com resposta JSON                               |
 
-- **Muito mais poder de processamento**
-- **Wi-Fi integrado**
-- **Compatível com a IDE Arduino**
-- **Nova USB-C com suporte WebUSB / WebSerial**
-- **Display LED e RTC integrados**
+---
+
+## 🎨 Efeitos Implementados
+
+1. **Arco-Íris Contínuo** – Cores cíclicas em gradiente suave  
+2. **Knight Rider (Correr)** – Movimento de ponto vermelho de um lado para outro  
+3. **Teclado (Preencher e Apagar)** – LEDs acendem um a um e depois apagam  
+4. **Piscada Dupla** – Todos os LEDs piscam com intervalo em dobro  
+5. **Chuva de LEDs** – Efeito aleatório simulando gotas de luz  
+6. **Branco Estático** – Todos os LEDs acesos na cor branca
+
+---
+
+## 🧠 Funcionamento Interno
+
+- O servidor é iniciado na porta 80 com `WiFiServer(80)`.
+- Página HTML com botões envia comandos via AJAX (`fetch()`).
+- O Arduino interpreta comandos como:
+  - `/efeito=2`
+  - `/brilho=200`
+  - `/velocidade=80`
+- Atualiza variáveis e executa o efeito selecionado.
+- Matriz de LEDs exibe o nome do efeito com `scrollText()`.
+
+---
+
+## 📦 Componentes Usados
+
+- **Arduino UNO R4 WiFi**
+- **Fita WS2812B** conectada ao pino 6
+- **Matriz de LED 12x8** on-board
+- **Bibliotecas:**
+  - `Adafruit_NeoPixel.h`
+  - `Arduino_LED_Matrix.h`
+  - `WiFiS3.h`
+
+---
+
+## 📄 Interface Web
+
+- HTML, CSS e JS são embutidos no firmware (`PROGMEM`)
+- Interface compatível com smartphones e computadores
+- Responde em JSON com informações atualizadas de efeito, brilho e velocidade
 
 ---
 
