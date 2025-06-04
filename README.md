@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://github.com/Epaminondaslage/IoT-Aciona-Rele-Rede-Wifi/blob/master/sitiopedeserra.png" alt="Interface" width="500" />
+  <img src="https://github.com/Epaminondaslage/IoT-Aciona-Rele-Rede-Wifi/blob/master/sitiopedeserra.png" alt="logo sitio" width="400" />
 </p>
 
 # Fita LED WS2812B
@@ -335,7 +335,9 @@ Integrar a WS2812B com Tasmota permite:
 
 # VI - Fita de LED com Arduino UNO R4 WIFI
 
-![uno_r4.jpg](Uno R4)
+<p align="center">
+  <img src="uno_r4.jpg" alt="uno" width="300" />
+</p>
 
  **UNO R4 WiFi**   Inclui  **Wi-Fi, Bluetooth**, **LED Matrix**, **RTC** e **modo WebUSB**
 
