@@ -5,8 +5,6 @@
 
 ## 📑 Índice
 
-### 📑 Índice
-
 - [I. Introdução](#i-introdução)
 - [II. Fita LED WS2812B](#ii-fita-led-ws2812b)
 - [III. Conversor de Nível Lógico com ESP32](#iii-conversor-de-nível-lógico-com-esp32)
