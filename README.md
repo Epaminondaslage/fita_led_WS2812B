@@ -335,8 +335,6 @@ Integrar a WS2812B com Tasmota permite:
 
 # VI - Fita de LED com Arduino UNO R4 WIFI
 
-## Projeto: Controle de Fita WS2812B com Arduino UNO R4 WiFi
-
 Este projeto utiliza o **Arduino UNO R4 WiFi** para controlar uma fita de LED **WS2812B (NeoPixel)**, com uma interface web moderna e responsiva. Os efeitos são selecionados via Wi-Fi usando botões interativos e são exibidos simultaneamente na **matriz de LED 12x8 integrada** da placa. A comunicação entre a página web e o microcontrolador é feita via **requisições AJAX**, sem recarregar a página.
 
 ---
