@@ -9,8 +9,8 @@
 Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 ArduinoLEDMatrix matrix;
 
-char ssid[] = "SEU_SSID";
-char pass[] = "SUA_SENHA";
+char ssid[] = "PLT-DIR";
+char pass[] = "epaminondas";
 WiFiServer server(80);
 
 int efeitoAtual = 0;
@@ -27,18 +27,85 @@ const char* nomesEfeitos[] = {
 };
 const int totalEfeitos = sizeof(nomesEfeitos) / sizeof(nomesEfeitos[0]);
 
+
+const char htmlPage[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Controle de LEDs WS2812B</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 40px; }
+    button { padding: 10px; margin: 5px; font-size: 16px; }
+    input[type=range] { width: 200px; }
+  </style>
+</head>
+<body>
+  <h1>Controle de Efeitos</h1>
+  <div>
+    <button onclick="enviar('efeito=0')">Arco-Íris</button>
+    <button onclick="enviar('efeito=1')">Knight Rider</button>
+    <button onclick="enviar('efeito=2')">Teclado</button><br>
+    <button onclick="enviar('efeito=3')">Piscada Dupla</button>
+    <button onclick="enviar('efeito=4')">Chuva</button>
+    <button onclick="enviar('efeito=5')">Branco</button>
+  </div>
+  <h2>Brilho</h2>
+  <input type="range" min="0" max="255" value="100" oninput="enviar('brilho=' + this.value)">
+  <h2>Velocidade</h2>
+  <input type="range" min="0" max="200" value="50" oninput="enviar('velocidade=' + this.value)">
+  <script>
+    function enviar(param) {
+      fetch('/?' + param);
+    }
+  </script>
+</body>
+</html>
+)rawliteral";
+
+// Prototipação das funções de efeito
+void exibirNomeEfeito();
+void executarEfeito();
+uint32_t Wheel(byte pos);
+
+void arcoIris();
+void knightRider();
+void teclado();
+void piscadaDupla();
+void chuva();
+void branco();
+
+
+
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   matrix.begin();
   strip.begin();
   strip.setBrightness(brilho);
   strip.show();
 
+  
+  Serial.begin(9600);
+  while (!Serial);  // Aguarda a Serial estar disponível
+  Serial.println("Iniciando conexão Wi-Fi...");
   WiFi.begin(ssid, pass);
-  while (WiFi.status() != WL_CONNECTED) delay(500);
+  int tentativas = 0;
+  while (WiFi.status() != WL_CONNECTED && tentativas < 20) {
+    delay(500);
+    Serial.print(".");
+    tentativas++;
+  }
+  Serial.println();
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.print("Conectado! IP: ");
+    Serial.println(WiFi.localIP());
+  } else {
+    Serial.println("Falha ao conectar no Wi-Fi.");
+  }
   server.begin();
-  Serial.println(WiFi.localIP());
   exibirNomeEfeito();
+
 }
 
 void loop() {
@@ -79,7 +146,7 @@ void loop() {
 
 void exibirNomeEfeito() {
   matrix.clear();
-  matrix.scrollText(nomesEfeitos[efeitoAtual], 100);
+  // matrix.scrollText(nomesEfeitos[efeitoAtual], 100);
 }
 
 void executarEfeito() {
@@ -164,45 +231,3 @@ uint32_t Wheel(byte pos) {
 
 // ---------- HTML embutido ----------
 
-const char htmlPage[] PROGMEM = R"rawliteral(
-<!DOCTYPE html>
-<html lang='pt-br'>
-<head>
-  <meta charset='UTF-8'>
-  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-  <title>LED FX Control</title>
-  <style>
-    body { font-family: sans-serif; text-align: center; background: #111; color: #eee; }
-    button { margin: 0.5em; padding: 1em; font-size: 1em; border-radius: 8px; border: none; background: #00bcd4; color: white; cursor: pointer; }
-    button:hover { background: #008c9e; }
-  </style>
-</head>
-<body>
-  <h1>Controle de Efeitos LED</h1>
-  <div>
-    <button onclick="enviar('efeito=0')">Arco-Íris</button>
-    <button onclick="enviar('efeito=1')">Knight Rider</button>
-    <button onclick="enviar('efeito=2')">Teclado</button>
-    <button onclick="enviar('efeito=3')">Piscada Dupla</button>
-    <button onclick="enviar('efeito=4')">Chuva</button>
-    <button onclick="enviar('efeito=5')">Branco</button><br>
-    <button onclick="enviar('velocidade=' + (velocidade - 10))">- Velocidade</button>
-    <button onclick="enviar('velocidade=' + (velocidade + 10))">+ Velocidade</button><br>
-    <button onclick="enviar('brilho=' + (brilho - 20))">- Brilho</button>
-    <button onclick="enviar('brilho=' + (brilho + 20))">+ Brilho</button>
-  </div>
-  <p id='status'></p>
-  <script>
-    let brilho = 100;
-    let velocidade = 50;
-    function enviar(cmd) {
-      fetch('/?' + cmd).then(r => r.json()).then(data => {
-        brilho = data.brilho;
-        velocidade = data.velocidade;
-        document.getElementById('status').innerText = `Efeito: ${data.efeito} | Brilho: ${brilho} | Velocidade: ${velocidade}`;
-      });
-    }
-  </script>
-</body>
-</html>
-)rawliteral";
