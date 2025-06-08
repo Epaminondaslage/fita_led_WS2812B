@@ -560,6 +560,94 @@ Este projeto utiliza o **Arduino UNO R4 WiFi** para controlar uma fita de LED **
 - Interface compatível com smartphones e computadores
 - Responde em JSON com informações atualizadas de efeito, brilho e velocidade
 
+
+# Guia de Alimentação e Interligação de Fitas LED WS2812 (NeoPixel)
+
+## 📌 Visão Geral
+
+As fitas de LED WS2812 são endereçáveis individualmente e controladas via sinal digital. Elas exigem alimentação adequada e atenção especial ao sinal de controle para funcionarem corretamente.
+
+---
+
+## 🔋 Tensão e Corrente de Alimentação
+
+- **Tensão**: **5V DC**
+  - ⚠️ **Nunca alimente diretamente com 12V!**
+- **Corrente por LED**: Até **60 mA** com brilho máximo (RGB = 255,255,255)
+  - Fórmula:
+    ```
+    Corrente_total = 0.06 A × número_de_LEDs
+    ```
+  - Exemplo:
+    - 60 LEDs → 60 × 0.06 A = **3.6 A**
+    - 150 LEDs → 150 × 0.06 A = **9 A**
+
+### ⚡ Fonte Recomendável
+
+- Use fonte **5V com corrente adequada**:
+  - Para 60 LEDs → 5V / 4A
+  - Para 150 LEDs → 5V / 10A
+- Tipos de fonte:
+  - Fonte chaveada 5V
+  - Fonte de bancada
+
+---
+
+## 🧬 Protocolo WS2812
+
+- **Tipo**: Digital, com temporização precisa
+- **Velocidade**: 800 kbps
+- **Bits por LED**: 24 bits (8 para cada cor: **GRB**, não RGB)
+- **Codificação**: Largura de pulso
+  - `1`: HIGH ≈ 0.8 µs / LOW ≈ 0.45 µs
+  - `0`: HIGH ≈ 0.4 µs / LOW ≈ 0.85 µs
+- **Reset**: Um LOW de > 50 µs sinaliza o fim da transmissão
+
+---
+
+## 🔗 Interligação de Fitas
+
+### Esquema com Múltiplas Fitas
+
+![Diagrama de Conexão WS2812](diagrama_ws2812.png)
+
+- **GND comum** entre todas as fitas e o microcontrolador
+- **+5V injetado a cada 1–2 metros** em fitas longas
+- **Data Out de uma fita → Data In da próxima**
+
+---
+
+## 🛠️ Recomendações e Proteções
+
+1. **Capacitor de 1000 µF / 6.3 V** entre +5V e GND na entrada da fita
+2. **Resistor de 330 Ω** no fio de dados
+3. **Use fios grossos** para +5V e GND em fitas longas (≥ 1,5 mm²)
+4. **Se usar microcontrolador de 3.3V (ESP32, ESP8266)**:
+   - Pode precisar de **level shifter** para o sinal de dados
+5. **Nunca alimente pelo pino 5V do Arduino**, use fonte externa dedicada
+
+---
+
+## 🧪 Exemplo de Código (Arduino)
+
+
+```cpp
+#include <Adafruit_NeoPixel.h>
+#define PIN 6
+#define NUM_LEDS 60
+
+Adafruit_NeoPixel strip(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
+
+void setup() {
+  strip.begin();
+  strip.show(); // Apaga tudo
+}
+
+void loop() {
+  for(int i=0; i<strip.numPixels(); i++) {
+    strip.setPixelColor(i, strip.Color(255, 0, 0)); // vermelho
+    strip.show();
+    delay(50);
 ---
 
 
