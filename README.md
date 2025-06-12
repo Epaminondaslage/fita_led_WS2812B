@@ -399,6 +399,17 @@ Este documento descreve como instalar e configurar o firmware **Tasmota** no **E
 
 ---
 
+## 🔌 Por que usar Tasmota com a WS2812B?
+
+Integrar a WS2812B com Tasmota permite:
+
+- Controlar a fita via **interface web** (sem necessidade de programar).
+- Integrar com assistentes como **Home Assistant**, **OpenHAB**, etc.
+- Usar comandos MQTT ou HTTP para definir cor, brilho e efeitos.
+- Fazer atualizações OTA e monitorar o status do dispositivo.
+
+---
+
 ## ✅ Microcontroladores Recomendados
 
 | Microcontrolador | Ideal para Tasmota com WS2812B? | Comentário                         |
@@ -512,31 +523,57 @@ Fade ON
 
 ---
 
-## 🔌 Por que usar Tasmota com a WS2812B?
-
-Integrar a WS2812B com Tasmota permite:
-
-- Controlar a fita via **interface web** (sem necessidade de programar).
-- Integrar com assistentes como **Home Assistant**, **OpenHAB**, etc.
-- Usar comandos MQTT ou HTTP para definir cor, brilho e efeitos.
-- Fazer atualizações OTA e monitorar o status do dispositivo.
-
-
 ## VII. Controle da Fita WS2812B com Arduino UNO R4 WiFi
 
-Este projeto utiliza o **Arduino UNO R4 WiFi** para controlar uma fita de LED **WS2812B (NeoPixel)**, com uma interface web moderna e responsiva. Os efeitos são selecionados via Wi-Fi usando botões interativos e são exibidos simultaneamente na **matriz de LED 12x8 integrada** da placa. A comunicação entre a página web e o microcontrolador é feita via **requisições AJAX**, sem recarregar a página.
-
----
-<p align="center">
-  <img src="uno_r4.jpg" alt="uno" width="300" />
-</p>
+Este projeto utiliza o **Arduino UNO R4 WiFi** para controlar uma fita de LED **WS2812B (NeoPixel)**, com uma interface web moderna e responsiva. Os efeitos são selecionados via Wi-Fi usando botões interativos e são exibidos simultaneamente na **matriz de LED 12x8 integrada** da placa.
 
  **UNO R4 WiFi**   Inclui  **Wi-Fi, Bluetooth**, **LED Matrix**, **RTC** e **modo WebUSB**
 
----
+<p align="center">
+  <img src="uno_r4.jpg" alt="unor4" width="300" />
+</p>
+
+## 🔋 Comparativo: UNO R3 vs UNO R4
+
+| Recurso                | UNO R3          | UNO R4 WiFi            |
+|------------------------|------------------|-------------------------|
+| MCU                    | ATmega328P (8-bit) | Renesas RA4M1 (32-bit)  |
+| Clock                 | 16 MHz           | 48 MHz                 |
+| Flash                 | 32 KB            | 256 KB                 |
+| SRAM                  | 2 KB             | 32 KB                  |
+| Conectividade         | Nenhuma          | Wi-Fi + Bluetooth      |
+| Tensão lógica         | 5V               | 5V                     |
+| Matriz de LEDs        | Não              | Sim                    |
+| Compatível com shields antigos | Sim      | Sim                    |
+
 ---
 
-## 🧪 Exemplo de Código (Arduino)
+## 🔧 Especificações Técnicas do Hardware utilizado neste projeto
+
+| Item                      | Detalhes                                 |
+|---------------------------|------------------------------------------|
+| **Microcontrolador**      | Renesas RA4M1 ARM Cortex-M4 (48 MHz)     |
+| **Memória Flash**         | 256 KB                                   |
+| **SRAM**                  | 32 KB                                    |
+| **Tensão de operação**    | 5V (compatível com shields UNO)          |
+| **GPIOs**                 | 14 digitais, 6 analógicos, PWM, UART, I2C, SPI |
+| **Tensão lógica dos pinos** | 5V (diferente do ESP32, que é 3.3V)       |
+| **Porta USB**             | USB-C (com suporte a WebSerial/WebUSB)   |
+
+---
+
+## 🌐 Recursos extras do UNO R4 **WiFi**
+
+| Recurso                  | Descrição                                  |
+|--------------------------|---------------------------------------------|
+| **Wi-Fi** e **Bluetooth**| Chip ESP32-S3 como co-processador de conectividade |
+| **LED Matrix 12x8**      | Matriz de LED integrada controlável via I2C |
+| **RTC (Relógio em tempo real)** | Alimentado com supercap para manter hora |
+| **Memória Flash externa**| Para armazenar arquivos com LittleFS (ainda limitado no IDE Arduino) |
+
+---
+
+## 🧪 Exemplo de um Código (Arduino) para controlar fita LED WS2812B
 
 ```cpp
 #include <Adafruit_NeoPixel.h>
@@ -585,80 +622,64 @@ void loop() {
 * randomSeed(analogRead(0)) é usado no setup() para garantir que as cores sejam diferentes a cada execução do programa.
 * O efeito visual permanece: acendimento progressivo, pausa, apagamento progressivo, pausa.
 
-## 🔧 Especificações Técnicas do Hardware utilizado
+# 🎮 Código do repositório arduino_uno_wifi_ws2812 : Controle de Fita WS2812B via Web com Arduino UNO R4 WiFi
 
-| Item                      | Detalhes                                 |
-|---------------------------|------------------------------------------|
-| **Microcontrolador**      | Renesas RA4M1 ARM Cortex-M4 (48 MHz)     |
-| **Memória Flash**         | 256 KB                                   |
-| **SRAM**                  | 32 KB                                    |
-| **Tensão de operação**    | 5V (compatível com shields UNO)          |
-| **GPIOs**                 | 14 digitais, 6 analógicos, PWM, UART, I2C, SPI |
-| **Tensão lógica dos pinos** | 5V (diferente do ESP32, que é 3.3V)       |
-| **Porta USB**             | USB-C (com suporte a WebSerial/WebUSB)   |
+🔗 [Acessar repositório no GitHub](https://github.com/Epaminondaslage/fita_led_WS2812B/tree/main/arduino_uno_wifi_ws2812)
 
----
+## ✅ O que o código faz?
 
-## 🌐 Recursos extras do UNO R4 **WiFi**
+Este projeto implementa um **servidor web local** usando o **Arduino UNO R4 WiFi** com a biblioteca `WiFiS3`, permitindo o **controle remoto de uma fita de LED WS2812B (NeoPixel)** com até 400 LEDs.
 
-| Recurso                  | Descrição                                  |
-|--------------------------|---------------------------------------------|
-| **Wi-Fi** e **Bluetooth**| Chip ESP32-S3 como co-processador de conectividade |
-| **LED Matrix 12x8**      | Matriz de LED integrada controlável via I2C |
-| **RTC (Relógio em tempo real)** | Alimentado com supercap para manter hora |
-| **Memória Flash externa**| Para armazenar arquivos com LittleFS (ainda limitado no IDE Arduino) |
+<p align="center">
+  <img src="app_fita_arduino.jpg" alt="app unor4" width="300" />
+</p>
+
+Através de uma interface web acessível via navegador, o sistema oferece as seguintes funcionalidades:
+
+- Selecionar diferentes **efeitos de iluminação**.
+- Ajustar o **brilho** dos LEDs (0 a 255).
+- Ajustar a **velocidade da animação** (em milissegundos).
 
 ---
 
-## 🔋 Comparativo: UNO R3 vs UNO R4
+## ✨ Funcionalidades incluídas
 
-| Recurso                | UNO R3          | UNO R4 WiFi            |
-|------------------------|------------------|-------------------------|
-| MCU                    | ATmega328P (8-bit) | Renesas RA4M1 (32-bit)  |
-| Clock                 | 16 MHz           | 48 MHz                 |
-| Flash                 | 32 KB            | 256 KB                 |
-| SRAM                  | 2 KB             | 32 KB                  |
-| Conectividade         | Nenhuma          | Wi-Fi + Bluetooth      |
-| Tensão lógica         | 5V               | 5V                     |
-| Matriz de LEDs        | Não              | Sim                    |
-| Compatível com shields antigos | Sim      | Sim                    |
+### 🎨 Efeitos disponíveis:
 
----
-## 🔧 Funcionalidades Principais do Software
-
-| Recurso                           | Descrição                                                                 |
-|----------------------------------|---------------------------------------------------------------------------|
-| 🎛️ Seis efeitos visuais          | Efeitos programados para a fita WS2812B                                   |
-| 📟 Matriz de LED integrada       | Exibe o nome do efeito atual na matriz 12x8 integrada                     |
-| 🌐 Servidor web embarcado        | Interface web é hospedada diretamente no Arduino UNO R4 WiFi              |
-| ⚡ Controle de brilho             | Ajuste em tempo real via interface                                        |
-| 🕒 Controle de velocidade         | Ajuste em tempo real via interface                                        |
-| 🔁 Troca de efeito em tempo real | A seleção é feita sem recarregar a página                                 |
-| 🔀 Comunicação via AJAX          | Troca de dados assíncrona com resposta JSON                               |
+1. **Cores Aleatórias** – cada LED recebe uma cor aleatória ao longo da fita.
+2. **Cometa** – efeito de um ponto de luz com rastro, simulando um cometa.
+3. **Piscar** – todos os LEDs piscam em branco, alternando ligado/desligado.
+4. **Arco-íris Estático** – um gradiente de cores fixo que percorre os LEDs.
+5. **Apagar** – desliga todos os LEDs.
+6. **Branco Frio** – todos os LEDs em branco puro (255, 255, 255).
+7. **Branco Quente** – LEDs com tonalidade amarelada (255, 160, 60).
+8. **Azul** – LEDs todos em azul puro.
+9. **Verde** – LEDs todos em verde puro.
+10. **Vermelho** – LEDs todos em vermelho puro.
+11. **Arco-íris Rotativo** – gradiente colorido que se move continuamente pela fita.
 
 ---
 
-## 🎨 Efeitos Implementados
+## 📶 Interface Web
 
-1. **Arco-Íris Contínuo** – Cores cíclicas em gradiente suave  
-2. **Knight Rider (Correr)** – Movimento de ponto vermelho de um lado para outro  
-3. **Teclado (Preencher e Apagar)** – LEDs acendem um a um e depois apagam  
-4. **Piscada Dupla** – Todos os LEDs piscam com intervalo em dobro  
-5. **Chuva de LEDs** – Efeito aleatório simulando gotas de luz  
-6. **Branco Estático** – Todos os LEDs acesos na cor branca
+Após carregar o código no Arduino e conectá-lo à rede Wi-Fi:
+
+1. Abra o **Monitor Serial** para ver o endereço IP.
+2. Acesse esse IP via navegador (ex: `http://192.168.0.101`).
+3. Use o formulário para:
+   - Escolher o efeito desejado.
+   - Ajustar brilho e velocidade.
+   - Aplicar as mudanças em tempo real.
 
 ---
 
-## 🧠 Funcionamento Interno
+## 📦 Requisitos
 
-- O servidor é iniciado na porta 80 com `WiFiServer(80)`.
-- Página HTML com botões envia comandos via AJAX (`fetch()`).
-- O Arduino interpreta comandos como:
-  - `/efeito=2`
-  - `/brilho=200`
-  - `/velocidade=80`
-- Atualiza variáveis e executa o efeito selecionado.
-- Matriz de LEDs exibe o nome do efeito com `scrollText()`.
+- Arduino UNO R4 WiFi
+- Fita WS2812B de até 400 LEDs
+- Fonte de alimentação externa adequada (5V com corrente suficiente)
+- Biblioteca:
+  - [Adafruit NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel)
 
 ---
 
@@ -671,15 +692,6 @@ void loop() {
   - `Adafruit_NeoPixel.h`
   - `Arduino_LED_Matrix.h`
   - `WiFiS3.h`
-
----
-
-## 📄 Interface Web
-
-- HTML, CSS e JS são embutidos no firmware (`PROGMEM`)
-- Interface compatível com smartphones e computadores
-- Responde em JSON com informações atualizadas de efeito, brilho e velocidade
-
 
 
 ---
