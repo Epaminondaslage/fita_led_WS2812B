@@ -7,11 +7,12 @@
 
 - [I. Introdução](#i-introdução)
 - [II. Fita LED WS2812B](#ii-fita-led-ws2812b)
-- [III. Conversor de Nível Lógico com ESP32](#iii-conversor-de-nível-lógico-com-esp32)
-- [IV. Controle da Fita WS2812B via Web com ESP32-WROOM](#iv-controle-da-fita-ws2812b-via-web-com-esp32-wroom)
-- [V. Controle da Fita WS2812B com Tasmota](#v-controle-da-fita-ws2812b-com-tasmota)
-- [VI. Controle da Fita WS2812B com Arduino UNO R4 WiFi](#vi-controle-da-fita-ws2812b-com-arduino-uno-r4-wifi)
-- [VII. Alimentação e Interligação de Fitas LED WS2812 NeoPixel](#vii-alimentação-e-interligação-de-fitas-led-ws2812-neopixel)
+- [III. Alimentação e Interligação de Fitas LED WS2812 NeoPixel](#iii-alimentação-e-interligação-de-fitas-led-ws2812-neopixel)
+- [IV. Conversor de Nível Lógico com ESP32](#iV-conversor-de-nível-lógico-com-esp32)
+- [V. Controle da Fita WS2812B via Web com ESP32-WROOM](#v-controle-da-fita-ws2812b-via-web-com-esp32-wroom)
+- [VI. Controle da Fita WS2812B com Tasmota](#vi-controle-da-fita-ws2812b-com-tasmota)
+- [VII. Controle da Fita WS2812B com Arduino UNO R4 WiFi](#vii-controle-da-fita-ws2812b-com-arduino-uno-r4-wifi)
+
 
 Este repositório demonstra como controlar uma fita de LED WS2812B (NeoPixel) utilizando:
 
@@ -133,9 +134,77 @@ Alternativamente, quem opta por programar diretamente o **ESP32** ou o **Arduino
 - Precisa de alimentação 5V estável
 - Sensível a ruídos em longas distâncias
 - Pode exigir capacitor e resistor para proteção
+
 ---
 
-## III. Conversor de Nível Lógico com ESP32
+# III-Alimentação e Interligação de Fitas LED WS2812 (NeoPixel)
+
+## 📌 Visão Geral
+
+As fitas de LED WS2812 são endereçáveis individualmente e controladas via sinal digital. Elas exigem alimentação adequada e atenção especial ao sinal de controle para funcionarem corretamente.
+
+---
+
+## 🔋 Tensão e Corrente de Alimentação
+
+- **Tensão**: **5V DC**
+  - ⚠️ **Nunca alimente diretamente com 12V!**
+- **Corrente por LED**: Até **60 mA** com brilho máximo (RGB = 255,255,255)
+  - Fórmula:
+    ```
+    Corrente_total = 0.06 A × número_de_LEDs
+    ```
+  - Exemplo:
+    - 60 LEDs → 60 × 0.06 A = **3.6 A**
+    - 150 LEDs → 150 × 0.06 A = **9 A**
+
+### ⚡ Fonte Recomendável
+
+- Use fonte **5V com corrente adequada**:
+  - Para 60 LEDs → 5V / 4A
+  - Para 150 LEDs → 5V / 10A
+- Tipos de fonte:
+  - Fonte chaveada 5V
+  - Fonte de bancada
+
+---
+
+## 🧬 Protocolo WS2812
+
+- **Tipo**: Digital, com temporização precisa
+- **Velocidade**: 800 kbps
+- **Bits por LED**: 24 bits (8 para cada cor: **GRB**, não RGB)
+- **Codificação**: Largura de pulso
+  - `1`: HIGH ≈ 0.8 µs / LOW ≈ 0.45 µs
+  - `0`: HIGH ≈ 0.4 µs / LOW ≈ 0.85 µs
+- **Reset**: Um LOW de > 50 µs sinaliza o fim da transmissão
+
+---
+
+## 🔗 Interligação de Fitas
+
+### Esquema com Múltiplas Fitas
+
+![Diagrama de Conexão WS2812](diagrama_ws2812.png)
+
+- **GND comum** entre todas as fitas e o microcontrolador
+- **+5V injetado a cada 1–2 metros** em fitas longas
+- **Data Out de uma fita → Data In da próxima**
+
+---
+
+## 🛠️ Recomendações e Proteções
+
+1. **Capacitor de 1000 µF / 6.3 V** entre +5V e GND na entrada da fita
+2. **Resistor de 330 Ω** no fio de dados
+3. **Use fios grossos** para +5V e GND em fitas longas (≥ 1,5 mm²)
+4. **Se usar microcontrolador de 3.3V (ESP32, ESP8266)**:
+   - Pode precisar de **level shifter** para o sinal de dados
+5. **Nunca alimente pelo pino 5V do Arduino**, use fonte externa dedicada
+   
+---
+
+## IV. Conversor de Nível Lógico com ESP32
 
 ## 📌 O que é um conversor de nível lógico?
 
@@ -210,7 +279,7 @@ Use apenas **um canal** do conversor. Exemplo usando o canal **LV1/HV1**:
 
 ---
 
-## IV. Controle da Fita WS2812B via Web com ESP32-WROOM
+## V. Controle da Fita WS2812B via Web com ESP32-WROOM
 
 ## O ESP32-WROOM
 
@@ -316,7 +385,7 @@ Instale via: **Sketch > Incluir Biblioteca > Gerenciar Bibliotecas**
 
 ---
 
-## V. Controle da Fita WS2812B com Tasmota
+## VI. Controle da Fita WS2812B com Tasmota
 
 O **Tasmota** é um firmware open-source altamente flexível para dispositivos ESP8266/ESP32, permitindo controle local e remoto via MQTT, HTTP, serial e interface web. Ele suporta uma ampla gama de sensores, relés e também **dispositivos de iluminação RGB endereçáveis**, como a **fita WS2812B**.
 
@@ -453,7 +522,7 @@ Integrar a WS2812B com Tasmota permite:
 - Fazer atualizações OTA e monitorar o status do dispositivo.
 
 
-## VI. Controle da Fita WS2812B com Arduino UNO R4 WiFi
+## VII. Controle da Fita WS2812B com Arduino UNO R4 WiFi
 
 Este projeto utiliza o **Arduino UNO R4 WiFi** para controlar uma fita de LED **WS2812B (NeoPixel)**, com uma interface web moderna e responsiva. Os efeitos são selecionados via Wi-Fi usando botões interativos e são exibidos simultaneamente na **matriz de LED 12x8 integrada** da placa. A comunicação entre a página web e o microcontrolador é feita via **requisições AJAX**, sem recarregar a página.
 
@@ -584,70 +653,6 @@ void loop() {
 - Responde em JSON com informações atualizadas de efeito, brilho e velocidade
 
 
-# VII-Alimentação e Interligação de Fitas LED WS2812 (NeoPixel)
-
-## 📌 Visão Geral
-
-As fitas de LED WS2812 são endereçáveis individualmente e controladas via sinal digital. Elas exigem alimentação adequada e atenção especial ao sinal de controle para funcionarem corretamente.
-
----
-
-## 🔋 Tensão e Corrente de Alimentação
-
-- **Tensão**: **5V DC**
-  - ⚠️ **Nunca alimente diretamente com 12V!**
-- **Corrente por LED**: Até **60 mA** com brilho máximo (RGB = 255,255,255)
-  - Fórmula:
-    ```
-    Corrente_total = 0.06 A × número_de_LEDs
-    ```
-  - Exemplo:
-    - 60 LEDs → 60 × 0.06 A = **3.6 A**
-    - 150 LEDs → 150 × 0.06 A = **9 A**
-
-### ⚡ Fonte Recomendável
-
-- Use fonte **5V com corrente adequada**:
-  - Para 60 LEDs → 5V / 4A
-  - Para 150 LEDs → 5V / 10A
-- Tipos de fonte:
-  - Fonte chaveada 5V
-  - Fonte de bancada
-
----
-
-## 🧬 Protocolo WS2812
-
-- **Tipo**: Digital, com temporização precisa
-- **Velocidade**: 800 kbps
-- **Bits por LED**: 24 bits (8 para cada cor: **GRB**, não RGB)
-- **Codificação**: Largura de pulso
-  - `1`: HIGH ≈ 0.8 µs / LOW ≈ 0.45 µs
-  - `0`: HIGH ≈ 0.4 µs / LOW ≈ 0.85 µs
-- **Reset**: Um LOW de > 50 µs sinaliza o fim da transmissão
-
----
-
-## 🔗 Interligação de Fitas
-
-### Esquema com Múltiplas Fitas
-
-![Diagrama de Conexão WS2812](diagrama_ws2812.png)
-
-- **GND comum** entre todas as fitas e o microcontrolador
-- **+5V injetado a cada 1–2 metros** em fitas longas
-- **Data Out de uma fita → Data In da próxima**
-
----
-
-## 🛠️ Recomendações e Proteções
-
-1. **Capacitor de 1000 µF / 6.3 V** entre +5V e GND na entrada da fita
-2. **Resistor de 330 Ω** no fio de dados
-3. **Use fios grossos** para +5V e GND em fitas longas (≥ 1,5 mm²)
-4. **Se usar microcontrolador de 3.3V (ESP32, ESP8266)**:
-   - Pode precisar de **level shifter** para o sinal de dados
-5. **Nunca alimente pelo pino 5V do Arduino**, use fonte externa dedicada
 
 ---
 
