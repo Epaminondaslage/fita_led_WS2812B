@@ -622,7 +622,9 @@ void loop() {
 * randomSeed(analogRead(0)) é usado no setup() para garantir que as cores sejam diferentes a cada execução do programa.
 * O efeito visual permanece: acendimento progressivo, pausa, apagamento progressivo, pausa.
 
-# 🎮 Código no repositório arduino_uno_wifi_ws2812 : Controle de Fita WS2812B via Web com Arduino UNO R4 WiFi
+# 🎮 Código do repositório arduino_uno_wifi_ws2812 : Controle de Fita WS2812B via Web com Arduino UNO R4 WiFi
+
+🔗 [Acessar repositório no GitHub](https://github.com/Epaminondaslage/fita_led_WS2812B/tree/main/arduino_uno_wifi_ws2812)
 
 ## ✅ O que o código faz?
 
@@ -678,7 +680,6 @@ Após carregar o código no Arduino e conectá-lo à rede Wi-Fi:
 - Fonte de alimentação externa adequada (5V com corrente suficiente)
 - Biblioteca:
   - [Adafruit NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel)
-
 
 ---
 
