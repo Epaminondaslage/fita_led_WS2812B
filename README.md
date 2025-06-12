@@ -465,8 +465,30 @@ Este projeto utiliza o **Arduino UNO R4 WiFi** para controlar uma fita de LED **
  **UNO R4 WiFi**   Inclui  **Wi-Fi, Bluetooth**, **LED Matrix**, **RTC** e **modo WebUSB**
 
 ---
+---
 
-## 🔧 Especificações técnicas do Hardware utilizado
+## 🧪 Exemplo de Código (Arduino)
+
+```cpp
+#include <Adafruit_NeoPixel.h>
+#define PIN 6
+#define NUM_LEDS 60
+
+Adafruit_NeoPixel strip(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
+
+void setup() {
+  strip.begin();
+  strip.show(); // Apaga tudo
+}
+
+void loop() {
+  for(int i=0; i<strip.numPixels(); i++) {
+    strip.setPixelColor(i, strip.Color(255, 0, 0)); // vermelho
+    strip.show();
+    delay(50);
+```
+
+## 🔧 Especificações Técnicas do Hardware utilizado
 
 | Item                      | Detalhes                                 |
 |---------------------------|------------------------------------------|
@@ -627,28 +649,6 @@ As fitas de LED WS2812 são endereçáveis individualmente e controladas via sin
    - Pode precisar de **level shifter** para o sinal de dados
 5. **Nunca alimente pelo pino 5V do Arduino**, use fonte externa dedicada
 
----
-
-## 🧪 Exemplo de Código (Arduino)
-
-
-```cpp
-#include <Adafruit_NeoPixel.h>
-#define PIN 6
-#define NUM_LEDS 60
-
-Adafruit_NeoPixel strip(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
-
-void setup() {
-  strip.begin();
-  strip.show(); // Apaga tudo
-}
-
-void loop() {
-  for(int i=0; i<strip.numPixels(); i++) {
-    strip.setPixelColor(i, strip.Color(255, 0, 0)); // vermelho
-    strip.show();
-    delay(50);
 ---
 
 
