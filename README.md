@@ -540,22 +540,50 @@ Este projeto utiliza o **Arduino UNO R4 WiFi** para controlar uma fita de LED **
 
 ```cpp
 #include <Adafruit_NeoPixel.h>
-#define PIN 6
-#define NUM_LEDS 60
+
+#define PIN 6          // Pino onde a fita de LED está conectada
+#define NUM_LEDS 400   // Número de LEDs na fita
 
 Adafruit_NeoPixel strip(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   strip.begin();
-  strip.show(); // Apaga tudo
+  strip.show(); // Garante que todos os LEDs comecem apagados
+  randomSeed(analogRead(0)); // Inicializa gerador de números aleatórios
 }
 
 void loop() {
-  for(int i=0; i<strip.numPixels(); i++) {
-    strip.setPixelColor(i, strip.Color(255, 0, 0)); // vermelho
+  // Gera uma nova cor aleatória (valores de 0 a 255 para R, G e B)
+  byte r = random(0, 256);
+  byte g = random(0, 256);
+  byte b = random(0, 256);
+  uint32_t corAleatoria = strip.Color(r, g, b);
+
+  // Acende os LEDs um por um com a cor aleatória
+  for (int i = 0; i < strip.numPixels(); i++) {
+    strip.setPixelColor(i, corAleatoria);
     strip.show();
-    delay(50);
+    delay(30);
+  }
+
+  delay(1000); // Espera com todos os LEDs acesos
+
+  // Apaga os LEDs um por um
+  for (int i = 0; i < strip.numPixels(); i++) {
+    strip.setPixelColor(i, 0); // Desliga o LED i
+    strip.show();
+    delay(30);
+  }
+
+  delay(1000); // Espera antes do próximo ciclo
+}
+
 ```
+### Explicação
+
+* random(0, 256) gera números de 0 a 255, usados para criar uma cor RGB aleatória.
+* randomSeed(analogRead(0)) é usado no setup() para garantir que as cores sejam diferentes a cada execução do programa.
+* O efeito visual permanece: acendimento progressivo, pausa, apagamento progressivo, pausa.
 
 ## 🔧 Especificações Técnicas do Hardware utilizado
 
