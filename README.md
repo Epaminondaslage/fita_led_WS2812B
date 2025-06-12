@@ -628,7 +628,7 @@ void loop() {
 
 ## ✅ O que o código faz?
 
-Este projeto implementa um **servidor web local** usando o **Arduino UNO R4 WiFi** com a biblioteca `WiFiS3`, permitindo o **controle remoto de uma fita de LED WS2812B (NeoPixel)** com até 400 LEDs.
+Este projeto implementa um **servidor web local** usando o **Arduino UNO R4 WiFi** com a biblioteca `WiFiS3`, permitindo o **controle remoto de uma fita de LED WS2812B (NeoPixel)** com até 400 LEDs. **Após carregar o sketch no arduino ele mostra o IP que a placa obteve através da porta serial.** 
 
 <p align="center">
   <img src="app_fita_arduino.jpg" alt="app unor4" width="300" />
