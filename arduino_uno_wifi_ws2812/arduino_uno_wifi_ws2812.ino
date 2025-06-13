@@ -60,8 +60,8 @@
 Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 // Credenciais da rede Wi-Fi
-char ssid[] = "PLT-DIR";           // Nome da rede Wi-Fi
-char pass[] = "epaminondas";      // Senha da rede Wi-Fi
+char ssid[] = "seu ssid";           // Nome da rede Wi-Fi
+char pass[] = "sua senha";      // Senha da rede Wi-Fi
 
 int status = WL_IDLE_STATUS;      // Estado inicial da conexão Wi-Fi
 WiFiServer server(80);            // Cria servidor web na porta 80
