@@ -28,7 +28,7 @@
   2. Configuração da rede Wi-Fi:
      - Altere as variáveis abaixo com as credenciais da sua rede:
          char ssid[] = "seu ssid";        // Nome da rede Wi-Fi (SSID)
-         char pass[] = "suas senha";    // Senha da rede Wi-Fi
+         char pass[] = "sua senha";    // Senha da rede Wi-Fi
 
   3. Biblioteca necessária:
      - Adafruit NeoPixel: instale pela IDE do Arduino
