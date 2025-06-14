@@ -27,8 +27,8 @@
 
   2. Configuração da rede Wi-Fi:
      - Altere as variáveis abaixo com as credenciais da sua rede:
-         char ssid[] = "PLT-DIR";        // Nome da rede Wi-Fi (SSID)
-         char pass[] = "epaminondas";    // Senha da rede Wi-Fi
+         char ssid[] = "seu ssid";        // Nome da rede Wi-Fi (SSID)
+         char pass[] = "suas senha";    // Senha da rede Wi-Fi
 
   3. Biblioteca necessária:
      - Adafruit NeoPixel: instale pela IDE do Arduino
