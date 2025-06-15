@@ -691,8 +691,6 @@ Após carregar o código no Arduino e conectá-lo à rede Wi-Fi:
 
 ## VIII. Fita de LED WS2815
 
-# Fita de LED WS2815 - Guia Completo
-
 A **fita WS2815** é um tipo de fita de LED digital endereçável que oferece vantagens significativas sobre modelos anteriores como a WS2812B, sendo ideal para projetos de iluminação programável, decoração, automação e efeitos visuais complexos.
 
 ---
@@ -865,7 +863,7 @@ Abaixo, um exemplo de ligação correta da fita WS2815 com o ESP32:
 
 ---
 
-## 📎 Notas Finais
+## 📎 Observações
 
 - Sempre conecte o **GND da fonte ao GND do ESP32**
 - Use capacitor de 1000 µF entre V+ e GND da fita
