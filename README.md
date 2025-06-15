@@ -18,10 +18,10 @@ Este repositório demonstra como controlar uma fita de LED WS2812B (NeoPixel) ut
 Ambas as plataformas apresentam:
 
   - Uma **interface web responsiva**
-  - **Botões interativos via AJAX** para:
-  - Selecionar efeitos de iluminação
-  - Ajustar a velocidade das animações
-  - Controlar o brilho dos LEDs
+  - Possibilidade, através de navegadores de :
+    - Selecionar efeitos de iluminação
+    - Ajustar a velocidade das animações
+    - Controlar o brilho dos LEDs
 
 Outra forma  possível é utilizar  o controle via **firmware TASMOTA**, ideal para integração com sistemas MQTT e automação residencial.
 
