@@ -618,7 +618,7 @@ void loop() {
 * randomSeed(analogRead(0)) é usado no setup() para garantir que as cores sejam diferentes a cada execução do programa.
 * O efeito visual permanece: acendimento progressivo, pausa, apagamento progressivo, pausa.
 
-# 🎮 Código do repositório arduino_uno_wifi_ws2812 : Controle de Fita WS2812B via Web com Arduino UNO R4 WiFi
+## 🎮 O repositório arduino_uno_wifi_ws2812 : Controle de Fita WS2812B via Web com Arduino UNO R4 WiFi
 
 🔗 [Acessar repositório no GitHub](https://github.com/Epaminondaslage/fita_led_WS2812B/tree/main/arduino_uno_wifi_ws2812)
 
@@ -855,21 +855,12 @@ cmnd/tasmota_WS2815/Dimmer 50      # Brilho em 50%
 
 ---
 
-## 🔌 Diagrama de Conexão Elétrica com ESP32
-
-Abaixo, um exemplo de ligação correta da fita WS2815 com o ESP32:
-
-![Diagrama ESP32 com WS2815](diagrama_ws2815_esp32.png)
-
----
-
 ## 📎 Observações
 
 - Sempre conecte o **GND da fonte ao GND do ESP32**
 - Use capacitor de 1000 µF entre V+ e GND da fita
 - Use resistor de 330Ω no fio de dados para proteção
 - Para longas distâncias, injete alimentação a cada 2-3 metros
-
 
 ---
 
