@@ -1,8 +1,4 @@
 
-<p align="center">
-  <img src="https://github.com/Epaminondaslage/IoT-Aciona-Rele-Rede-Wifi/blob/master/sitiopedeserra.png" alt="logo sitio" width="400" />
-</p>
-
 ## 📑 Índice
 
 - [I. Introdução](#i-introdução)
@@ -12,7 +8,7 @@
 - [V. Controle da Fita WS2812B via Web com ESP32-WROOM](#v-controle-da-fita-ws2812b-via-web-com-esp32-wroom)
 - [VI. Controle da Fita WS2812B com Tasmota](#vi-controle-da-fita-ws2812b-com-tasmota)
 - [VII. Controle da Fita WS2812B com Arduino UNO R4 WiFi](#vii-controle-da-fita-ws2812b-com-arduino-uno-r4-wifi)
-
+- [VIII. Comparativo Técnico: WS2812B vs WS2815](#viii-comparativo-técnico:-ws2812b-vs-ws2815)
 
 Este repositório demonstra como controlar uma fita de LED WS2812B (NeoPixel) utilizando:
 
@@ -692,6 +688,68 @@ Após carregar o código no Arduino e conectá-lo à rede Wi-Fi:
   - `Adafruit_NeoPixel.h`
   - `Arduino_LED_Matrix.h`
   - `WiFiS3.h`
+
+## VIII. Comparativo Técnico: WS2812B vs WS2815
+
+Este documento apresenta as principais diferenças entre as fitas de LED digitais **WS2812B** e **WS2815**, com foco em alimentação, controle, robustez e aplicação.
+
+---
+
+## 🧾 Tabela Comparativa
+
+| Característica              | WS2812B                         | WS2815                            |
+|----------------------------|----------------------------------|-----------------------------------|
+| **Tensão de Alimentação**  | 5V                               | **12V**                           |
+| **Consumo por LED (RGB máx)** | ~60 mA                        | ~12 mA                            |
+| **Número de Canais**       | 1 linha de dados (Data In/Out)  | **2 linhas** (Data + Backup)      |
+| **Tolerância a Falhas**    | Um LED queimado interrompe tudo | **Linha de backup mantém funcionamento** |
+| **Distância de Alimentação** | Baixa (perda de tensão rápida) | **Alta (perda menor com 12V)**    |
+| **Compatibilidade**        | Alta (muito usada)              | Alta (usa o mesmo protocolo WS281x) |
+| **Resistência a Ruído**    | Média                           | **Maior robustez**                |
+| **Uso Recomendado**        | Projetos curtos (<2m), baratos  | **Instalações maiores e profissionais** |
+
+---
+
+## ⚠️ Considerações de Instalação
+
+### WS2812B:
+- Ideal para **curtas distâncias**
+- Alimentação com **5V**
+- Se um LED falhar, a fita inteira após ele para de funcionar
+- Simples de usar com ESP32 (pode usar direto GPIO)
+
+### WS2815:
+- **Alimentação 12V** → permite **menos injeções de energia**
+- Requer **conversor de nível lógico (3.3V → 5V)** para uso com ESP32
+- Linha de **backup (BI)** evita falhas completas
+- Perfeita para **projetos longos e resistentes a falhas**
+
+---
+
+## ✅ Recomendação
+
+| Tipo de Projeto                           | Melhor escolha |
+|------------------------------------------|----------------|
+| Protótipo simples, portátil               | WS2812B        |
+| Instalação longa (3m+), externa ou robusta| **WS2815**     |
+| Ambientes industriais ou com ruído        | **WS2815**     |
+
+---
+
+## 🔌 Diagrama de Conexão Elétrica com ESP32
+
+Abaixo, um exemplo de ligação correta da fita WS2815 com o ESP32:
+
+![Diagrama ESP32 com WS2815](diagrama_ws2815_esp32.png)
+
+---
+
+## 📎 Notas Finais
+
+- Sempre conecte o **GND da fonte ao GND do ESP32**
+- Use capacitor de 1000 µF entre V+ e GND da fita
+- Use resistor de 330Ω no fio de dados para proteção
+- Para longas distâncias, injete alimentação a cada 2-3 metros
 
 
 ---
