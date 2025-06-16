@@ -1,4 +1,4 @@
-# Comparativo de Fitas de LED Endereçáveis
+# X- Comparativo de Fitas de LED Endereçáveis
 
 Fitas de LED endereçáveis permitem o controle individual de cada LED, criando efeitos dinâmicos como arco-íris, animações, transições e muito mais. Abaixo está um comparativo entre os modelos mais populares.
 
