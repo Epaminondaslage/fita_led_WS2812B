@@ -9,7 +9,7 @@ Ao longo deste material, você encontrará explicações sobre os princípios de
 - [I. Introdução](#i-introdução)
 - [II. Fita LED WS2812B](#ii-fita-led-ws2812b)
 - [III. Alimentação e Interligação de Fitas LED WS2812 NeoPixel](#iii-alimentação-e-interligação-de-fitas-led-ws2812-neopixel)
-- [IV. Conversor de Nível Lógico](#conversor-nivel-logico.md)
+- [IV. Conversor de Nível Lógico](conversor-nivel-logico.md)
 - [V. Controle da Fita WS2812B via Web com ESP32-WROOM](#v-controle-da-fita-ws2812b-via-web-com-esp32-wroom)
 - [VI. Controle da Fita WS2812B com Tasmota](#vi-controle-da-fita-ws2812b-com-tasmota)
 - [VII. Controle da Fita WS2812B com Arduino UNO R4 WiFi](#vii-controle-da-fita-ws2812b-com-arduino-uno-r4-wifi)
@@ -195,7 +195,7 @@ As fitas de LED WS2812 são endereçáveis individualmente e controladas via sin
 
 ## IV. Conversor de Nível Lógico com ESP32
 
-[Veja o  aqui o repositório do conversor de nível lógico](#conversor-nivel-logico.md)
+[Veja o  aqui o repositório do conversor de nível lógico](conversor-nivel-logico.md)
 
 ---
 ## V. Controle da Fita WS2812B via Web com ESP32-WROOM
