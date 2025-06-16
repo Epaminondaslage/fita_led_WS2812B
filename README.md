@@ -8,7 +8,7 @@
 - [V. Controle da Fita WS2812B via Web com ESP32-WROOM](#v-controle-da-fita-ws2812b-via-web-com-esp32-wroom)
 - [VI. Controle da Fita WS2812B com Tasmota](#vi-controle-da-fita-ws2812b-com-tasmota)
 - [VII. Controle da Fita WS2812B com Arduino UNO R4 WiFi](#vii-controle-da-fita-ws2812b-com-arduino-uno-r4-wifi)
-- [VIII. Fita de LED WS2815](#viii-fita-de-led-ws2815)
+- [VIII. Fita de LED WS2815](Fita-de-LED-WS2815.md)
 
 Este repositório demonstra como controlar uma fita de LED WS2812B (NeoPixel) utilizando:
 
