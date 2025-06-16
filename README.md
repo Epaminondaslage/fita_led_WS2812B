@@ -1,3 +1,8 @@
+## Controle de Fitas de LED Endereçáveis com ESP32, Tasmota e Arduino
+
+Este repositório reúne uma coletânea de conteúdos técnicos e práticos sobre o controle de fitas de LED endereçáveis, com foco especial nos modelos WS2812B e WS2815. O objetivo é oferecer uma visão completa — do funcionamento básico das fitas até a implementação de sistemas de controle avançados via Wi-Fi, utilizando plataformas como ESP32-WROOM, Tasmota e Arduino UNO R4 WiFi.
+
+Ao longo deste material, você encontrará explicações sobre os princípios de funcionamento das fitas NeoPixel, dicas de alimentação e interligação, uso de conversores de nível lógico, e diversos exemplos de controle via interface web. Também são abordadas as particularidades do uso de firmware Tasmota com LEDs endereçáveis e um comparativo entre diferentes modelos de fitas disponíveis no mercado.
 
 ## 📑 Índice 
 
@@ -10,21 +15,8 @@
 - [VII. Controle da Fita WS2812B com Arduino UNO R4 WiFi](#vii-controle-da-fita-ws2812b-com-arduino-uno-r4-wifi)
 - [VIII. Fita de LED WS2815](Fita-de-LED-WS2815.md)
 - [IX. Tasmota com fitas de LED endereçáveis](fitas_tasmota.md)
-  
-Este repositório demonstra como controlar uma fita de LED WS2812B (NeoPixel) utilizando:
+- [X. Comparativo entre fitas de LED Endereçáveis](modelos_fitas_led.md)
 
-- Um **ESP32** com Wi-Fi integrado,
-- Ou um **Arduino UNO R4 WiFi** com sua matriz de LED on-board e suporte a Wi-Fi
-
-Ambas as plataformas apresentam:
-
-  - Uma **interface web responsiva**
-  - Possibilidade, através de navegadores de :
-    - Selecionar efeitos de iluminação
-    - Ajustar a velocidade das animações
-    - Controlar o brilho dos LEDs
-
-Outra forma  possível é utilizar  o controle via **firmware TASMOTA**, ideal para integração com sistemas MQTT e automação residencial.
 
 ---
 
