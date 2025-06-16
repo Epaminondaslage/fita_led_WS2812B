@@ -193,7 +193,7 @@ As fitas de LED WS2812 são endereçáveis individualmente e controladas via sin
    
 ---
 
-## IV. Conversor de Nível Lógico com ESP32
+## IV. Conversor de Nível Lógico
 
 [Veja o  aqui o repositório do conversor de nível lógico](conversor-nivel-logico.md)
 
