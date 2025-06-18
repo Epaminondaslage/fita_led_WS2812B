@@ -1,9 +1,8 @@
 /*
   ================================================================================
-  Projeto: Controle de Fita de LED WS2812B com Arduino UNO R4 WiFi via Web
-  (Adaptado para ESP32)
+  Projeto: Controle de Fita de LED WS2812B com ESP32)
   Autor:   Epaminondas de Souza Lage
-  Data:    10/06/2025
+  Data:    18/06/2025
   Versão:  1.1 (ESP32)
 
   Descrição:
