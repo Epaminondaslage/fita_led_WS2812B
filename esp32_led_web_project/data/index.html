@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='UTF-8'>
+  <title>LEDs WS2812B</title>
+</head>
+<body style='background:#111;color:#fff;font-family:sans-serif;text-align:center'>
+  <h2>LEDs WS2812B</h2>
+  <form action='/config' method='get'>
+    <label>Efeito:
+      <select name='efeito'>
+        <option value='0'>Aleatório</option>
+        <option value='1'>Cometa</option>
+        <option value='2'>Piscar</option>
+        <option value='3'>Arco-Íris</option>
+        <option value='4'>Apagar</option>
+        <option value='5'>Branco Frio</option>
+        <option value='6'>Branco Quente</option>
+        <option value='7'>Azul</option>
+        <option value='8'>Verde</option>
+        <option value='9'>Vermelho</option>
+        <option value='10'>Arco-Íris Rotativo</option>
+      </select>
+    </label><br>
+    <label>Brilho: <input type='range' min='0' max='255' name='brilho'></label><br>
+    <label>Velocidade: <input type='range' min='1' max='200' name='vel'></label><br>
+    <input type='submit' value='Aplicar'>
+  </form>
+</body>
+</html>
