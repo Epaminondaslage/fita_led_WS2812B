@@ -222,6 +222,27 @@ Possui suporte a protocolos como **MQTT**, **HTTP**, e bibliotecas como **ESPAsy
 
 ---
 
+## Projeto: Controle de Fita de LED WS2812B com ESP32 via Web
+
+## Repositório do codigo: 
+
+--- 
+
+## 📋 Descrição
+
+Este projeto permite controlar uma fita de LEDs WS2812B (NeoPixel) utilizando um ESP32 com interface web. Através de um navegador conectado à mesma rede, o usuário pode selecionar efeitos de iluminação, ajustar o brilho e modificar a velocidade dos efeitos.
+
+---
+
+## 🎯 Funcionalidades
+
+- Conexão Wi-Fi com rede local
+- Interface web simples hospedada no ESP32 (servidor HTTP embutido)
+- Controle de **11 efeitos visuais**
+- Ajuste de **brilho (0–255)** e **velocidade (1–200)**
+- Efeitos implementados **sem uso de `delay()`** (não bloqueantes)
+
+---
 ## 🔧 Conexões da fita ao ESP32
 
 | Fita WS2812B | ESP32                  |
@@ -232,75 +253,70 @@ Possui suporte a protocolos como **MQTT**, **HTTP**, e bibliotecas como **ESPAsy
 
 **Importante:** Conecte o GND da fonte e do ESP32 em comum.
 
-
-## 🚀 Funcionalidades
-
-- Servidor Web embutido no ESP32.
-- Interface HTML moderna e responsiva (compatível com smartphones).
-- Seis efeitos visuais:
-  - Arco-íris contínuo
-  - Correr (Knight Rider)
-  - Teclado (preencher e apagar)
-  - Piscada dupla
-  - Chuva de LEDs
-  - Branco estático
-- Botões para:
-  - Selecionar efeitos
-  - Aumentar / diminuir **velocidade**
-  - Aumentar / diminuir **brilho**
-- Comunicação via AJAX (sem recarregar a página).
-
 ---
 
-## 🌐 Interface Web
+## 📶 Configuração de Rede Wi-Fi
 
-Acesse via navegador após o ESP32 se conectar à rede.  
-Use o IP exibido no Serial Monitor, ex:
+No código, edite as seguintes variáveis:
 
-```plaintext
-Conectado! IP: 192.168.0.105
+```cpp
+const char* ssid = "seu ssid";   // Nome da rede Wi-Fi
+const char* pass = "sua senha";  // Senha da rede Wi-Fi
 ```
 
-## 📸 Controles disponíveis
+---
 
-- **Seção de efeitos:** Botões nomeados por efeito
-- **Velocidade:** "Mais rápido" / "Mais lento"
-- **Brilho:** "Aumentar" / "Diminuir"
+## 📦 Bibliotecas Necessárias
+
+Instale via Gerenciador de Bibliotecas da IDE Arduino:
+
+- **WiFi.h** (padrão para ESP32)
+- **Adafruit NeoPixel**
 
 ---
 
-## 🛠️ Como usar
+## 🧪 Testando o Projeto
 
-1. Instale a biblioteca **Adafruit NeoPixel** na IDE do Arduino.
-2. Substitua as credenciais de Wi-Fi no código:
-   ```cpp
-   const char* ssid = "SEU_SSID";
-   const char* password = "SUA_SENHA";
-   ```
-3. Faça o upload do código para o ESP32.
-4. Abra o navegador e acesse o IP mostrado no monitor serial.
+1. Compile e envie o código para o ESP32 via IDE Arduino.
+2. Abra o **Monitor Serial** (baud 115200).
+3. Aguarde a conexão com a rede e anote o **endereço IP** exibido.
+4. Acesse via navegador: `http://<ip_do_esp32>`
 
 ---
 
-## 📁 Estrutura do código
+## 🎨 Interface Web
 
-| Função                  | Descrição                                         |
-|-------------------------|--------------------------------------------------|
-| `setup()`               | Inicializa Wi-Fi, LEDs e servidor HTTP           |
-| `loop()`                | Executa o efeito atual continuamente             |
-| `/`                     | Rota principal: exibe a interface HTML           |
-| `/efeito?id=N`          | Seleciona o efeito visual                        |
-| `/velocidade?acao=...`  | Aumenta ou diminui a velocidade dos efeitos      |
-| `/brilho?acao=...`      | Aumenta ou diminui o brilho da fita LED          |
+A interface web permite:
+
+- Selecionar efeitos (lista suspensa)
+- Ajustar brilho (slider 0–255)
+- Ajustar velocidade (slider 1–200)
+
+### Efeitos Disponíveis
+
+| Valor | Efeito               |
+|-------|----------------------|
+| 0     | Aleatório            |
+| 1     | Cometa               |
+| 2     | Piscar               |
+| 3     | Arco-Íris            |
+| 4     | Apagar               |
+| 5     | Branco Frio          |
+| 6     | Branco Quente        |
+| 7     | Azul                 |
+| 8     | Verde                |
+| 9     | Vermelho             |
+| 10    | Arco-Íris Rotativo   |
 
 ---
 
-## 📌 Dependências
+## ⚙️ Ajustes Opcionais
 
-- ESP32 core para Arduino
-- Adafruit NeoPixel
+- **Número de LEDs:** edite `NUM_LEDS`
+- **Pino de dados:** edite `LED_PIN`
+- **Efeitos adicionais:** adicione novas funções ao `switch` no `loop()`
 
-Instale via: **Sketch > Incluir Biblioteca > Gerenciar Bibliotecas**
+
 
 ---
 
