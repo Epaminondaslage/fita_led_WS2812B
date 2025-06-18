@@ -222,9 +222,9 @@ Possui suporte a protocolos como **MQTT**, **HTTP**, e bibliotecas como **ESPAsy
 
 ---
 
-## Projeto: Controle de Fita de LED WS2812B com ESP32 via Web
+## 🎮 O repositório esp32_ws2812B : Controle de Fita WS2812B via Web com Esp 32 WROOM
 
-## Repositório do codigo: 
+🔗 [Acessar repositório no GitHub](https://github.com/Epaminondaslage/fita_led_WS2812B/tree/main/arduino_uno_wifi_ws2812)
 
 --- 
 
