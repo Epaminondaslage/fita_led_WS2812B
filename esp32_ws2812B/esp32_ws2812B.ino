@@ -3,7 +3,17 @@
   Projeto: Controle de Fita de LED WS2812B com ESP32
   Autor:   Epaminondas de Souza Lage
   Data:    20/06/2025
-  Versão:  1.2 (Melhorias visuais e botão de desligar)
+  Versão:  1.5
+
+  Descrição:
+    Controle de uma fita WS2812B via Wi-Fi (HTTP), com efeitos visuais, brilho e
+    velocidade ajustáveis. A interface web é responsiva e continua funcionando
+    mesmo se a fita estiver desconectada.
+
+  Funcionalidades:
+    - Inicia com a fita desligada (efeito preto)
+    - Interface web com botões de efeito, sliders com onchange
+    - Exibe alerta na página se a fita não estiver funcionando
   ================================================================================
 */
 
@@ -20,7 +30,7 @@ const char* pass = "epaminondas";
 
 WiFiServer server(80);
 
-int efeitoAtual = 0;
+int efeitoAtual = 11; // Inicia desligado
 int brilho = 100;
 int velocidade = 50;
 unsigned long ultimoTempo = 0;
@@ -34,7 +44,7 @@ void setup() {
   Serial.begin(115200);
   strip.begin();
   strip.setBrightness(brilho);
-  strip.show();
+  strip.show(); // Apaga tudo no início
 
   WiFi.begin(ssid, pass);
   Serial.print("Conectando-se à rede Wi-Fi");
@@ -54,16 +64,12 @@ void loop() {
   if (client) {
     client.setTimeout(500);
     String req = "";
-
     while (client.connected()) {
       String line = client.readStringUntil('\n');
       if (line == "\r") break;
       req += line;
     }
-
     client.flush();
-    Serial.println("Requisição recebida:");
-    Serial.println(req);
 
     if (req.indexOf("GET /config") >= 0) {
       if (req.indexOf("efeito=") >= 0)
@@ -76,7 +82,6 @@ void loop() {
         velocidade = constrain(getParam(req, "vel").toInt(), 1, 200);
     }
 
-    // HTML com fundo branco, sliders estilizados e botão "Desligar Fita"
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: text/html");
     client.println("Connection: close");
@@ -89,34 +94,30 @@ void loop() {
     client.println("input[type=range]{width:80%;margin:10px auto;display:block;}");
     client.println("</style></head><body>");
     client.println("<h2>Controle de LEDs WS2812B</h2>");
-    client.println("<form action='/config' method='get'>");
 
-    // Botões de efeitos
+    client.println("<form action='/config' method='get'>");
     client.println("<div style='display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:10px 0;'>");
-    String nomes[] = {
-      "Aleatório", "Cometa", "Piscar", "Arco-Íris", "Apagar",
-      "Branco Frio", "Branco Quente", "Azul", "Verde", "Vermelho", "Arco-Íris Rotativo"
-    };
-    for (int i = 0; i <= 10; i++) {
-      String classe = (efeitoAtual == i) ? "selected" : "";
+    String nomes[] = {"Aleatório", "Cometa", "Piscar", "Arco-Íris", "Branco Frio", "Branco Quente", "Azul", "Verde", "Vermelho", "Arco-Íris Rotativo"};
+    for (int i = 0; i < 10; i++) {
+      String classe = (efeitoAtual == i ? "selected" : "");
       client.println("<button type='submit' name='efeito' value='" + String(i) + "' class='" + classe + "'>" + nomes[i] + "</button>");
     }
-    client.println("</div>");
+    client.println("</div></form>");
 
-    // Sliders
     client.println("<label>Brilho:</label>");
-    client.println("<input type='range' min='0' max='255' name='brilho' value='" + String(brilho) + "'>");
+    client.println("<input type='range' min='0' max='255' value='" + String(brilho) + "' onchange=\"location.href='/config?brilho='+this.value\">");
+
     client.println("<label>Velocidade:</label>");
-    client.println("<input type='range' min='1' max='200' name='vel' value='" + String(velocidade) + "'>");
+    client.println("<input type='range' min='1' max='200' value='" + String(velocidade) + "' onchange=\"location.href='/config?vel='+this.value\">");
 
-    client.println("<input type='submit' value='Aplicar' style='padding:10px 20px;margin-top:10px;'>");
-    client.println("</form>");
-
-    // Botão "Desligar Fita"
     client.println("<form action='/config' method='get' style='margin-top:20px;'>");
-    client.println("<input type='hidden' name='efeito' value='4'>");
+    client.println("<input type='hidden' name='efeito' value='11'>");
     client.println("<button type='submit' style='background:#000;color:#fff;'>Desligar Fita</button>");
     client.println("</form>");
+
+    if (!strip.canShow()) {
+      client.println("<p style='color:red'>⚠ Fita de LEDs não detectada ou desconectada.</p>");
+    }
 
     client.println("</body></html>");
     client.stop();
@@ -129,13 +130,13 @@ void loop() {
       case 1: efeitoCometa(); break;
       case 2: efeitoPiscar(); break;
       case 3: efeitoArcoIris(); break;
-      case 4: efeitoApagar(); break;
-      case 5: efeitoCorFixa(255, 255, 255); break;
-      case 6: efeitoCorFixa(255, 160, 60); break;
-      case 7: efeitoCorFixa(0, 0, 255); break;
-      case 8: efeitoCorFixa(0, 255, 0); break;
-      case 9: efeitoCorFixa(255, 0, 0); break;
-      case 10: efeitoArcoIrisRotativo(); break;
+      case 4: efeitoCorFixa(255, 255, 255); break;
+      case 5: efeitoCorFixa(255, 160, 60); break;
+      case 6: efeitoCorFixa(0, 0, 255); break;
+      case 7: efeitoCorFixa(0, 255, 0); break;
+      case 8: efeitoCorFixa(255, 0, 0); break;
+      case 9: efeitoArcoIrisRotativo(); break;
+      case 11: efeitoCorFixa(0, 0, 0); break; // Desligado
     }
   }
 }
@@ -149,7 +150,6 @@ String getParam(String req, String key) {
   return req.substring(start, end);
 }
 
-// Efeitos
 void efeitoCoresAleatorias() {
   strip.setPixelColor(frameAtual, strip.Color(random(255), random(255), random(255)));
   frameAtual++;
@@ -187,11 +187,6 @@ void efeitoArcoIris() {
   }
   strip.show();
   arcoIrisOffset++;
-}
-
-void efeitoApagar() {
-  strip.clear();
-  strip.show();
 }
 
 void efeitoCorFixa(uint8_t r, uint8_t g, uint8_t b) {
