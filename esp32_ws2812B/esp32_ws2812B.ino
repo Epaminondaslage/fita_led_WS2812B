@@ -2,18 +2,18 @@
   ================================================================================
   Projeto: Controle de Fita de LED WS2812B com ESP32
   Autor:   Epaminondas de Souza Lage
-  Data:    20/06/2025
-  Versão:  1.5
+  Versão:  1.7 - Atualizado com efeito "Progressivo por Setores"
 
   Descrição:
-    Controle de uma fita WS2812B via Wi-Fi (HTTP), com efeitos visuais, brilho e
-    velocidade ajustáveis. A interface web é responsiva e continua funcionando
-    mesmo se a fita estiver desconectada.
+    Controle de uma fita WS2812B via Wi-Fi com interface HTML. Permite escolher 
+    efeitos visuais, ajustar brilho, velocidade, e desligar a fita.
 
   Funcionalidades:
-    - Inicia com a fita desligada (efeito preto)
-    - Interface web com botões de efeito, sliders com onchange
-    - Exibe alerta na página se a fita não estiver funcionando
+    - Interface responsiva via navegador
+    - 11 efeitos visuais
+    - Ajuste de brilho e velocidade
+    - Fita inicia desligada
+    - Mostra aviso se fita estiver ausente
   ================================================================================
 */
 
@@ -44,7 +44,7 @@ void setup() {
   Serial.begin(115200);
   strip.begin();
   strip.setBrightness(brilho);
-  strip.show(); // Apaga tudo no início
+  strip.show();
 
   WiFi.begin(ssid, pass);
   Serial.print("Conectando-se à rede Wi-Fi");
@@ -78,8 +78,10 @@ void loop() {
         brilho = constrain(getParam(req, "brilho").toInt(), 0, 255);
         strip.setBrightness(brilho);
       }
-      if (req.indexOf("vel=") >= 0)
-        velocidade = constrain(getParam(req, "vel").toInt(), 1, 200);
+      if (req.indexOf("vel=") >= 0) {
+        int val = constrain(getParam(req, "vel").toInt(), 1, 200);
+        velocidade = 201 - val; // Inversão: direita = mais rápido
+      }
     }
 
     client.println("HTTP/1.1 200 OK");
@@ -97,8 +99,13 @@ void loop() {
 
     client.println("<form action='/config' method='get'>");
     client.println("<div style='display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:10px 0;'>");
-    String nomes[] = {"Aleatório", "Cometa", "Piscar", "Arco-Íris", "Branco Frio", "Branco Quente", "Azul", "Verde", "Vermelho", "Arco-Íris Rotativo"};
-    for (int i = 0; i < 10; i++) {
+
+    String nomes[] = {
+      "Confete", "Cometa", "Piscar", "Arco-Íris",
+      "Branco Frio", "Branco Quente", "Azul", "Verde",
+      "Vermelho", "Arco-Íris Rotativo", "Progressivo"
+    };
+    for (int i = 0; i < 11; i++) {
       String classe = (efeitoAtual == i ? "selected" : "");
       client.println("<button type='submit' name='efeito' value='" + String(i) + "' class='" + classe + "'>" + nomes[i] + "</button>");
     }
@@ -107,8 +114,8 @@ void loop() {
     client.println("<label>Brilho:</label>");
     client.println("<input type='range' min='0' max='255' value='" + String(brilho) + "' onchange=\"location.href='/config?brilho='+this.value\">");
 
-    client.println("<label>Velocidade:</label>");
-    client.println("<input type='range' min='1' max='200' value='" + String(velocidade) + "' onchange=\"location.href='/config?vel='+this.value\">");
+    client.println("<label>Velocidade (esquerda = lenta, direita = rápida):</label>");
+    client.println("<input type='range' min='1' max='200' value='" + String(201 - velocidade) + "' onchange=\"location.href='/config?vel='+this.value\">");
 
     client.println("<form action='/config' method='get' style='margin-top:20px;'>");
     client.println("<input type='hidden' name='efeito' value='11'>");
@@ -126,7 +133,7 @@ void loop() {
   if (millis() - ultimoTempo >= velocidade) {
     ultimoTempo = millis();
     switch (efeitoAtual) {
-      case 0: efeitoCoresAleatorias(); break;
+      case 0: efeitoConfete(); break;
       case 1: efeitoCometa(); break;
       case 2: efeitoPiscar(); break;
       case 3: efeitoArcoIris(); break;
@@ -136,7 +143,8 @@ void loop() {
       case 7: efeitoCorFixa(0, 255, 0); break;
       case 8: efeitoCorFixa(255, 0, 0); break;
       case 9: efeitoArcoIrisRotativo(); break;
-      case 11: efeitoCorFixa(0, 0, 0); break; // Desligado
+      case 10: efeitoProgressivoPorSetores(); break;
+      case 11: efeitoCorFixa(0, 0, 0); break;
     }
   }
 }
@@ -150,17 +158,16 @@ String getParam(String req, String key) {
   return req.substring(start, end);
 }
 
-void efeitoCoresAleatorias() {
-  strip.setPixelColor(frameAtual, strip.Color(random(255), random(255), random(255)));
-  frameAtual++;
-  if (frameAtual >= NUM_LEDS) {
-    strip.show();
-    frameAtual = 0;
-  }
+// === Efeitos ===
+
+void efeitoConfete() {
+  int p = random(NUM_LEDS);
+  strip.setPixelColor(p, strip.Color(random(255), random(255), random(255)));
+  strip.show();
 }
 
 void efeitoCometa() {
-  int cauda = 10;
+  int cauda = 15;
   strip.clear();
   for (int j = 0; j < cauda; j++) {
     int p = posCometa - j;
@@ -189,13 +196,6 @@ void efeitoArcoIris() {
   arcoIrisOffset++;
 }
 
-void efeitoCorFixa(uint8_t r, uint8_t g, uint8_t b) {
-  for (int i = 0; i < NUM_LEDS; i++) {
-    strip.setPixelColor(i, strip.Color(r, g, b));
-  }
-  strip.show();
-}
-
 void efeitoArcoIrisRotativo() {
   static uint16_t offset = 0;
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -204,6 +204,32 @@ void efeitoArcoIrisRotativo() {
   }
   strip.show();
   offset++;
+}
+
+void efeitoCorFixa(uint8_t r, uint8_t g, uint8_t b) {
+  for (int i = 0; i < NUM_LEDS; i++) {
+    strip.setPixelColor(i, strip.Color(r, g, b));
+  }
+  strip.show();
+}
+
+void efeitoProgressivoPorSetores() {
+  static int setor = 0;
+  int totalSetores = 10;
+  int ledsPorSetor = NUM_LEDS / totalSetores;
+
+  strip.clear();
+  for (int i = 0; i <= setor && i < totalSetores; i++) {
+    for (int j = 0; j < ledsPorSetor; j++) {
+      int idx = i * ledsPorSetor + j;
+      if (idx < NUM_LEDS)
+        strip.setPixelColor(idx, strip.Color(0, 150, 255));
+    }
+  }
+  strip.show();
+
+  setor++;
+  if (setor >= totalSetores) setor = 0;
 }
 
 uint32_t wheel(byte pos) {
