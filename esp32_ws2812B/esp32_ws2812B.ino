@@ -1,91 +1,41 @@
 /*
   ================================================================================
-  Projeto: Controle de Fita de LED WS2812B com ESP32)
+  Projeto: Controle de Fita de LED WS2812B com ESP32
   Autor:   Epaminondas de Souza Lage
-  Data:    18/06/2025
-  Versão:  1.1 (ESP32)
-
-  Descrição:
-    Este projeto permite controlar uma fita de LEDs WS2812B (NeoPixel) via interface 
-    web usando o ESP32. Através de um navegador conectado à mesma rede, 
-    é possível escolher efeitos de iluminação, ajustar brilho e velocidade de animação.
-
-  Funcionalidades:
-    - Conexão Wi-Fi com rede local
-    - Interface web simples (servidor HTTP embutido)
-    - Controle de 11 efeitos visuais via navegador
-    - Ajuste de brilho e velocidade dos efeitos
-    - Sem uso de delay() (efeitos não bloqueantes)
-
-  ================================================================================
-  CONFIGURAÇÕES NECESSÁRIAS
-  -------------------------------------------------------------------------------
-  1. Conexão da Fita WS2812B:
-     - Pino de dados: conecte ao pino digital 5 do ESP32 (ou outro pino adequado)
-     - Alimente os LEDs com fonte externa adequada (5V e corrente suficiente)
-     - GND da fonte dos LEDs deve estar conectado ao GND do ESP32
-
-  2. Configuração da rede Wi-Fi:
-     - Altere as variáveis abaixo com as credenciais da sua rede:
-         const char* ssid = "seu ssid";        // Nome da rede Wi-Fi (SSID)
-         const char* pass = "sua senha";       // Senha da rede Wi-Fi
-
-  3. Biblioteca necessária:
-     - Adafruit NeoPixel: instale pela IDE do Arduino
-       (Gerenciador de Bibliotecas > Pesquisar: "Adafruit NeoPixel")
-
-  4. Acesso à interface web:
-     - Após carregar o código, abra o Monitor Serial (baud 115200)
-     - Anote o endereço IP exibido (ex: 192.168.0.101)
-     - Acesse via navegador: http://<ip_do_esp32>
-
-  5. Ajustes opcionais:
-     - Número de LEDs: altere a constante NUM_LEDS conforme sua fita
-     - Pino de dados: altere LED_PIN caso deseje usar outro pino digital
-
-  ================================================================================
-  Licença:
-    Este projeto é de uso livre para fins educacionais, acadêmicos e pessoais.
-    Modificações são permitidas mediante créditos ao autor original.
+  Data:    20/06/2025
+  Versão:  1.2 (Melhorias visuais e botão de desligar)
   ================================================================================
 */
 
-#include <WiFi.h>                 // Biblioteca para conexão Wi-Fi no ESP32
-#include <Adafruit_NeoPixel.h>   // Biblioteca para controle de LEDs WS2812B (NeoPixel)
+#include <WiFi.h>
+#include <Adafruit_NeoPixel.h>
 
-#define LED_PIN    5             // Pino onde a fita de LEDs está conectada
-#define NUM_LEDS   400           // Quantidade total de LEDs na fita
+#define LED_PIN 5
+#define NUM_LEDS 400
 
 Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
-// Credenciais da rede Wi-Fi
-const char* ssid = "seu ssid";         // Nome da rede Wi-Fi
-const char* pass = "sua senha";        // Senha da rede Wi-Fi
+const char* ssid = "PLT-DIR";
+const char* pass = "epaminondas";
 
-WiFiServer server(80);                 // Cria servidor web na porta 80
+WiFiServer server(80);
 
-// Variáveis de configuração e controle
 int efeitoAtual = 0;
 int brilho = 100;
 int velocidade = 50;
 unsigned long ultimoTempo = 0;
 
-// Variáveis internas para efeitos
 int frameAtual = 0;
 bool estadoPiscar = false;
 int posCometa = 0;
 uint8_t arcoIrisOffset = 0;
 
-// ========================
-// Função de configuração
-// ========================
 void setup() {
   Serial.begin(115200);
   strip.begin();
   strip.setBrightness(brilho);
   strip.show();
 
-  // Conecta-se à rede Wi-Fi
   WiFi.begin(ssid, pass);
   Serial.print("Conectando-se à rede Wi-Fi");
   while (WiFi.status() != WL_CONNECTED) {
@@ -99,9 +49,6 @@ void setup() {
   server.begin();
 }
 
-// ========================
-// Loop principal
-// ========================
 void loop() {
   WiFiClient client = server.available();
   if (client) {
@@ -129,31 +76,49 @@ void loop() {
         velocidade = constrain(getParam(req, "vel").toInt(), 1, 200);
     }
 
-    // Envia a página HTML
+    // HTML com fundo branco, sliders estilizados e botão "Desligar Fita"
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: text/html");
     client.println("Connection: close");
     client.println();
-    client.println("<!DOCTYPE html><html><head><meta charset='UTF-8'><title>LEDs</title></head>");
-    client.println("<body style='background:#111;color:#fff;font-family:sans-serif;text-align:center'>");
-    client.println("<h2>LEDs WS2812B</h2>");
+    client.println("<!DOCTYPE html><html><head><meta charset='UTF-8'><title>LEDs</title>");
+    client.println("<style>");
+    client.println("body{background:#fff;color:#000;font-family:sans-serif;text-align:center;margin:20px;}");
+    client.println("button{padding:10px 20px;background:#fff;color:#000;border:1px solid #ccc;cursor:pointer;margin:4px;}");
+    client.println("button.selected{font-weight:bold;border:2px solid #000;}");
+    client.println("input[type=range]{width:80%;margin:10px auto;display:block;}");
+    client.println("</style></head><body>");
+    client.println("<h2>Controle de LEDs WS2812B</h2>");
     client.println("<form action='/config' method='get'>");
-    client.println("<label>Efeito:<select name='efeito'>");
-    client.println("<option value='0'" + String(efeitoAtual == 0 ? " selected" : "") + ">Aleatório</option>");
-    client.println("<option value='1'" + String(efeitoAtual == 1 ? " selected" : "") + ">Cometa</option>");
-    client.println("<option value='2'" + String(efeitoAtual == 2 ? " selected" : "") + ">Piscar</option>");
-    client.println("<option value='3'" + String(efeitoAtual == 3 ? " selected" : "") + ">Arco-Íris</option>");
-    client.println("<option value='4'" + String(efeitoAtual == 4 ? " selected" : "") + ">Apagar</option>");
-    client.println("<option value='5'" + String(efeitoAtual == 5 ? " selected" : "") + ">Branco Frio</option>");
-    client.println("<option value='6'" + String(efeitoAtual == 6 ? " selected" : "") + ">Branco Quente</option>");
-    client.println("<option value='7'" + String(efeitoAtual == 7 ? " selected" : "") + ">Azul</option>");
-    client.println("<option value='8'" + String(efeitoAtual == 8 ? " selected" : "") + ">Verde</option>");
-    client.println("<option value='9'" + String(efeitoAtual == 9 ? " selected" : "") + ">Vermelho</option>");
-    client.println("<option value='10'" + String(efeitoAtual == 10 ? " selected" : "") + ">Arco-Íris Rotativo</option>");
-    client.println("</select></label><br>");
-    client.println("<label>Brilho: <input type='range' min='0' max='255' name='brilho' value='" + String(brilho) + "'></label><br>");
-    client.println("<label>Velocidade: <input type='range' min='1' max='200' name='vel' value='" + String(velocidade) + "'></label><br>");
-    client.println("<input type='submit' value='Aplicar'></form></body></html>");
+
+    // Botões de efeitos
+    client.println("<div style='display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:10px 0;'>");
+    String nomes[] = {
+      "Aleatório", "Cometa", "Piscar", "Arco-Íris", "Apagar",
+      "Branco Frio", "Branco Quente", "Azul", "Verde", "Vermelho", "Arco-Íris Rotativo"
+    };
+    for (int i = 0; i <= 10; i++) {
+      String classe = (efeitoAtual == i) ? "selected" : "";
+      client.println("<button type='submit' name='efeito' value='" + String(i) + "' class='" + classe + "'>" + nomes[i] + "</button>");
+    }
+    client.println("</div>");
+
+    // Sliders
+    client.println("<label>Brilho:</label>");
+    client.println("<input type='range' min='0' max='255' name='brilho' value='" + String(brilho) + "'>");
+    client.println("<label>Velocidade:</label>");
+    client.println("<input type='range' min='1' max='200' name='vel' value='" + String(velocidade) + "'>");
+
+    client.println("<input type='submit' value='Aplicar' style='padding:10px 20px;margin-top:10px;'>");
+    client.println("</form>");
+
+    // Botão "Desligar Fita"
+    client.println("<form action='/config' method='get' style='margin-top:20px;'>");
+    client.println("<input type='hidden' name='efeito' value='4'>");
+    client.println("<button type='submit' style='background:#000;color:#fff;'>Desligar Fita</button>");
+    client.println("</form>");
+
+    client.println("</body></html>");
     client.stop();
   }
 
@@ -175,9 +140,6 @@ void loop() {
   }
 }
 
-// ========================
-// Função auxiliar para obter parâmetros GET da URL
-// ========================
 String getParam(String req, String key) {
   int start = req.indexOf(key + "=");
   if (start == -1) return "";
@@ -187,9 +149,7 @@ String getParam(String req, String key) {
   return req.substring(start, end);
 }
 
-// ========================
-// Efeitos visuais
-// ========================
+// Efeitos
 void efeitoCoresAleatorias() {
   strip.setPixelColor(frameAtual, strip.Color(random(255), random(255), random(255)));
   frameAtual++;
