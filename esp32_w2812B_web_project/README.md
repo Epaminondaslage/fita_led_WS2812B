@@ -1,4 +1,4 @@
-# Projeto: Controle de Fita de LED WS2812B com ESP32 via Wi-Fi e arquivos em SPIFFS
+# Projeto: Controle de Fita de LED WS2812B com ESP32 via Wi-Fi
 
 Este projeto permite controlar uma fita de LED WS2812B com até 400 LEDs utilizando um ESP32 e uma interface web responsiva. Os efeitos podem ser selecionados através do navegador, e as configurações são salvas no próprio ESP32 (persistência).
 
@@ -77,3 +77,4 @@ Você pode baixar a versão final do projeto com todos os arquivos prontos aqui:
 
 ---
 
+Desenvolvido por **Epaminondas de Souza Lage**

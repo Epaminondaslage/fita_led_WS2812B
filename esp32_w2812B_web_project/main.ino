@@ -69,14 +69,14 @@ Content-Type: text/plain
 
       if (req.indexOf("efeito=") >= 0)
         efeitoAtual = getParam(req, "efeito").toInt();
-                      prefs.putInt("efeito", efeitoAtual);
+prefs.putInt("efeito", efeitoAtual);
       if (req.indexOf("brilho=") >= 0) {
         brilho = constrain(getParam(req, "brilho").toInt(), 0, 255);
         prefs.begin("ledprefs", false);
 brilho = prefs.getInt("brilho", 100);
 efeitoAtual = prefs.getInt("efeito", 11);
-              strip.setBrightness(brilho);
-              prefs.putInt("brilho", brilho);
+strip.setBrightness(brilho);
+prefs.putInt("brilho", brilho);
       }
       if (req.indexOf("vel=") >= 0) {
         int val = constrain(getParam(req, "vel").toInt(), 1, 200);
