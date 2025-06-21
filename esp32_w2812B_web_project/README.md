@@ -69,11 +69,5 @@ Arduino IDE > Ferramentas > ESP32 Sketch Data Upload
   - Adafruit NeoPixel
   - Preferences
 
-## 📦 Download do Projeto
-
-Você pode baixar a versão final do projeto com todos os arquivos prontos aqui:
-
-**[📥 esp32_led_spiffs_persistente.zip](esp32_led_spiffs_persistente.zip)**
-
 ---
 
