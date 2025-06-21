@@ -1,30 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset='UTF-8'>
-  <title>LEDs WS2812B</title>
+  <meta charset="UTF-8">
+  <title>Controle de LEDs</title>
+  <link rel="stylesheet" href="/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body style='background:#111;color:#fff;font-family:sans-serif;text-align:center'>
-  <h2>LEDs WS2812B</h2>
-  <form action='/config' method='get'>
-    <label>Efeito:
-      <select name='efeito'>
-        <option value='0'>Aleatório</option>
-        <option value='1'>Cometa</option>
-        <option value='2'>Piscar</option>
-        <option value='3'>Arco-Íris</option>
-        <option value='4'>Apagar</option>
-        <option value='5'>Branco Frio</option>
-        <option value='6'>Branco Quente</option>
-        <option value='7'>Azul</option>
-        <option value='8'>Verde</option>
-        <option value='9'>Vermelho</option>
-        <option value='10'>Arco-Íris Rotativo</option>
-      </select>
-    </label><br>
-    <label>Brilho: <input type='range' min='0' max='255' name='brilho'></label><br>
-    <label>Velocidade: <input type='range' min='1' max='200' name='vel'></label><br>
-    <input type='submit' value='Aplicar'>
+<body>
+  <h2>Controle de LEDs WS2812B</h2>
+  <form action="/config" method="get">
+    <div class="botoes" id="botoesEfeitos">
+      <button type="button" onclick="setEfeito(0)">Confete</button>
+      <button type="button" onclick="setEfeito(1)">Cometa</button>
+      <button type="button" onclick="setEfeito(2)">Piscar</button>
+      <button type="button" onclick="setEfeito(3)">Arco-Íris</button>
+      <button type="button" onclick="setEfeito(4)">Branco Frio</button>
+      <button type="button" onclick="setEfeito(5)">Branco Quente</button>
+      <button type="button" onclick="setEfeito(6)">Azul</button>
+      <button type="button" onclick="setEfeito(7)">Verde</button>
+      <button type="button" onclick="setEfeito(8)">Vermelho</button>
+      <button type="button" onclick="setEfeito(9)">Arco-Íris Rotativo</button>
+      <button type="button" onclick="setEfeito(10)">Progressivo</button>
+      <button type="button" onclick="setEfeito(12)">Polícia</button>
+      <button type="button" onclick="setEfeito(13)">Corrida Teatro</button>
+      <button type="button" onclick="setEfeito(14)">Explosão Central</button>
+      <button type="button" class="desligar" onclick="setEfeito(11)">Desligar</button>
+    </div>
   </form>
+
+  <label>Brilho:</label>
+  <input type="range" min="0" max="255" onchange="location.href='/config?brilho='+this.value">
+  <label>Velocidade:</label>
+  <input type="range" min="1" max="200" onchange="location.href='/config?vel='+this.value">
+
+  <script>
+    window.onload = () => {
+      fetch('/config?get=efeito')
+        .then(response => response.text())
+        .then(text => {
+          const valor = parseInt(text);
+          if (!isNaN(valor)) {
+            document.querySelectorAll('.botoes button')[valor < 11 ? valor : (valor === 12 ? 11 : valor === 13 ? 12 : 13)].classList.add('selected');
+          }
+        });
+    };
+
+    function setEfeito(valor) {
+      fetch('/config?efeito=' + valor)
+        .then(() => {
+          document.querySelectorAll('.botoes button').forEach(btn => btn.classList.remove('selected'));
+          document.querySelectorAll('.botoes button')[valor < 11 ? valor : (valor === 12 ? 11 : valor === 13 ? 12 : 13)].classList.add('selected');
+        });
+    }
+  </script>
 </body>
 </html>
