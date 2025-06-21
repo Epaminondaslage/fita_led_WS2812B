@@ -243,7 +243,7 @@ Este projeto permite controlar uma fita de LEDs WS2812B (NeoPixel) utilizando um
 - Efeitos implementados **sem uso de `delay()`** (não bloqueantes)
 
 ---
-## 🔧 Conexões da fita ao ESP32
+## 🔧 Conexões da fita ao ESP32 Wroom DEV Kit
 
 | Fita WS2812B | ESP32                  |
 |--------------|------------------------|
@@ -296,7 +296,6 @@ A interface web permite:
 
 | Valor | Efeito               |
 |-------|----------------------|
-| 0     | Confete              |
 | 1     | Cometa               |
 | 2     | Piscar               |
 | 3     | Arco-Íris            |
@@ -306,8 +305,20 @@ A interface web permite:
 | 7     | Verde                |
 | 8     | Vermelho             |
 | 9     | Arco-Íris Rotativo   |
-| 10    |                      |
+| 10    | Progrtessivo Setores |
 
+efeitoConfete(); break;
+      case 1: efeitoCometa(); break;
+      case 2: efeitoPiscar(); break;
+      case 3: efeitoArcoIris(); break;
+      case 4: efeitoCorFixa(255, 255, 255); break;
+      case 5: efeitoCorFixa(255, 160, 60); break;
+      case 6: efeitoCorFixa(0, 0, 255); break;
+      case 7: efeitoCorFixa(0, 255, 0); break;
+      case 8: efeitoCorFixa(255, 0, 0); break;
+      case 9: efeitoArcoIrisRotativo(); break;
+      case 10: efeitoProgressivoPorSetores(); break;
+      case 11: efeitoCorFixa(0, 0, 0); bre
 ---
 
 ## ⚙️ Ajustes Opcionais
