@@ -25,8 +25,8 @@
 
 Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
-const char* ssid = "PLT-DIR";
-const char* pass = "epaminondas";
+const char* ssid = "SEU SSID";
+const char* pass = "SUA SENHA";
 
 WiFiServer server(80);
 
