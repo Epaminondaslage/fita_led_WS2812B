@@ -306,7 +306,7 @@ A interface web permite:
 | 8     | Vermelho             |
 | 9     | Arco-Íris Rotativo   |
 | 10    | Progrtessivo Setores |
-| 11    |                      |
+| 11    | Desliga leds         |
 
 ---
 
@@ -314,8 +314,6 @@ A interface web permite:
 
 - **Número de LEDs:** edite `NUM_LEDS`
 - **Pino de dados:** edite `LED_PIN`
-- **Efeitos adicionais:** adicione novas funções ao `switch` no `loop()`
-
 
 
 ---
