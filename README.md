@@ -296,17 +296,17 @@ A interface web permite:
 
 | Valor | Efeito               |
 |-------|----------------------|
-| 0     | Aleatório            |
+| 0     | Confete              |
 | 1     | Cometa               |
 | 2     | Piscar               |
 | 3     | Arco-Íris            |
-| 4     | Apagar               |
-| 5     | Branco Frio          |
-| 6     | Branco Quente        |
-| 7     | Azul                 |
-| 8     | Verde                |
-| 9     | Vermelho             |
-| 10    | Arco-Íris Rotativo   |
+| 4     | Branco Frio          |
+| 5     | Branco Quente        |
+| 6     | Azul                 |
+| 7     | Verde                |
+| 8     | Vermelho             |
+| 9     | Arco-Íris Rotativo   |
+| 10    |                      |
 
 ---
 
