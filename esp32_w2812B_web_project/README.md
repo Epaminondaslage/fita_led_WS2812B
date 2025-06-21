@@ -58,6 +58,8 @@ Depois, vá em:
 ```
 Arduino IDE > Ferramentas > ESP32 Sketch Data Upload
 ```
+👉 [Como instalar o ESP32 SPIFFS Uploader no MAC](https://github.com/Epaminondaslage/fita_led_WS2812B/blob/main/esp32_w2812B_web_project/TUTORIAL.md)
+
 
 ## ✅ Requisitos
 
