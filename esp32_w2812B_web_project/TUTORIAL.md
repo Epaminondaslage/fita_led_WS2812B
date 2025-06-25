@@ -76,6 +76,3 @@ Este script irá:
 
 Você agora pode atualizar arquivos no SPIFFS sem a IDE Arduino. Após o upload, reinicie seu ESP32 e ele carregará os arquivos diretamente da memória.
 
-Se tiver dúvidas ou precisar adaptar para outra partição, entre em contato!
-
-Desenvolvido por **Epaminondas de Souza Lage**
