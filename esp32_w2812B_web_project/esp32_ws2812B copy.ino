@@ -2,20 +2,18 @@
   ================================================================================
   Projeto: Controle de Fita de LED WS2812B com ESP32
   Autor:   Epaminondas de Souza Lage
-  Versão:  1.9
+  Versão:  1.7 - Atualizado com efeito "Progressivo por Setores"
 
   Descrição:
     Controle de uma fita WS2812B via Wi-Fi com interface HTML. Permite escolher 
-    efeitos visuais, ajustar brilho, velocidade, e desligar a fita. Reset de
-    variáveis de efeitos adicionado para garantir transição limpa.
+    efeitos visuais, ajustar brilho, velocidade, e desligar a fita.
 
   Funcionalidades:
     - Interface responsiva via navegador
-    - 12 efeitos visuais
+    - 11 efeitos visuais
     - Ajuste de brilho e velocidade
     - Fita inicia desligada
     - Mostra aviso se fita estiver ausente
-    - Reset de variáveis ao trocar de efeito
   ================================================================================
 */
 
@@ -32,7 +30,7 @@ const char* pass = "SUA SENHA";
 
 WiFiServer server(80);
 
-int efeitoAtual = 12; // Inicia desligado
+int efeitoAtual = 11; // Inicia desligado
 int brilho = 100;
 int velocidade = 50;
 unsigned long ultimoTempo = 0;
@@ -41,8 +39,6 @@ int frameAtual = 0;
 bool estadoPiscar = false;
 int posCometa = 0;
 uint8_t arcoIrisOffset = 0;
-int ledAtual = 0;
-int setor = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -76,10 +72,8 @@ void loop() {
     client.flush();
 
     if (req.indexOf("GET /config") >= 0) {
-      if (req.indexOf("efeito=") >= 0) {
+      if (req.indexOf("efeito=") >= 0)
         efeitoAtual = getParam(req, "efeito").toInt();
-        resetarEfeitos();
-      }
       if (req.indexOf("brilho=") >= 0) {
         brilho = constrain(getParam(req, "brilho").toInt(), 0, 255);
         strip.setBrightness(brilho);
@@ -109,9 +103,9 @@ void loop() {
     String nomes[] = {
       "Confete", "Cometa", "Piscar", "Arco-Íris",
       "Branco Frio", "Branco Quente", "Azul", "Verde",
-      "Vermelho", "Arco-Íris Rotativo", "Progressivo","Ligar Sequencial"
+      "Vermelho", "Arco-Íris Rotativo", "Progressivo"
     };
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < 11; i++) {
       String classe = (efeitoAtual == i ? "selected" : "");
       client.println("<button type='submit' name='efeito' value='" + String(i) + "' class='" + classe + "'>" + nomes[i] + "</button>");
     }
@@ -124,7 +118,7 @@ void loop() {
     client.println("<input type='range' min='1' max='200' value='" + String(201 - velocidade) + "' onchange=\"location.href='/config?vel='+this.value\">");
 
     client.println("<form action='/config' method='get' style='margin-top:20px;'>");
-    client.println("<input type='hidden' name='efeito' value='12'>");
+    client.println("<input type='hidden' name='efeito' value='11'>");
     client.println("<button type='submit' style='background:#000;color:#fff;'>Desligar Fita</button>");
     client.println("</form>");
 
@@ -150,19 +144,9 @@ void loop() {
       case 8: efeitoCorFixa(255, 0, 0); break;
       case 9: efeitoArcoIrisRotativo(); break;
       case 10: efeitoProgressivoPorSetores(); break;
-      case 11: efeitoAcenderSequencial(); break;
-      case 12: efeitoCorFixa(0, 0, 0); break;
+      case 11: efeitoCorFixa(0, 0, 0); break;
     }
   }
-}
-
-void resetarEfeitos() {
-  frameAtual = 0;
-  estadoPiscar = false;
-  posCometa = 0;
-  arcoIrisOffset = 0;
-  ledAtual = 0;
-  setor = 0;
 }
 
 String getParam(String req, String key) {
@@ -247,17 +231,6 @@ void efeitoProgressivoPorSetores() {
   setor++;
   if (setor >= totalSetores) setor = 0;
 }
-
-void efeitoAcenderSequencial() {
-  static int ledAtual = 0;
-
-  if (ledAtual < NUM_LEDS) {
-    strip.setPixelColor(ledAtual, strip.Color(255, 160, 60)); // Branco quente
-    strip.show();
-    ledAtual++;
-  }
-}
-
 
 uint32_t wheel(byte pos) {
   if (pos < 85) return strip.Color(pos * 3, 255 - pos * 3, 0);
