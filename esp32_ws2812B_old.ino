@@ -94,22 +94,16 @@ void loop() {
     }
 
     // Resposta HTML
-      client.println("HTTP/1.1 200 OK");
-      client.println("Content-Type: text/html\nConnection: close\n");
-      client.println("<!DOCTYPE html><html><head><meta charset='UTF-8'>");
-      client.println("<meta name='viewport' content='width=device-width, initial-scale=1'>");
-      client.println("<title>Controle de LEDs</title>");
-      client.println("<style>");
-      client.println("body{background:#fff;color:#000;font-family:sans-serif;text-align:center;margin:10px;padding:0;}");
-      client.println("h2{font-size:1.5em;margin-bottom:10px;}");
-      client.println("form{margin:0;}");
-      client.println("button{min-width:120px;padding:14px 10px;font-size:16px;background:#fff;color:#000;border:2px solid #ccc;border-radius:8px;margin:6px;}");
-      client.println("button.selected{font-weight:bold;border:2px solid #000;}");
-      client.println("input[type=range]{width:90%;margin:14px auto;display:block;}");
-      client.println("@media (max-width:600px){button{width:100%;max-width:300px;}}");
-      client.println("</style></head><body>");
-      client.println("<h2>Fita de LED: Passarela</h2>");
-
+    client.println("HTTP/1.1 200 OK");
+    client.println("Content-Type: text/html\nConnection: close\n");
+    client.println("<!DOCTYPE html><html><head><meta charset='UTF-8'><title>LEDs</title>");
+    client.println("<style>");
+    client.println("body{background:#fff;color:#000;font-family:sans-serif;text-align:center;margin:20px;}");
+    client.println("button{padding:10px 20px;background:#fff;color:#000;border:1px solid #ccc;cursor:pointer;margin:4px;}");
+    client.println("button.selected{font-weight:bold;border:2px solid #000;}");
+    client.println("input[type=range]{width:80%;margin:10px auto;display:block;}");
+    client.println("</style></head><body>");
+    client.println("<h2>Fita de LED: Passarela</h2>");
 
     // Botões de efeito
     client.println("<form action='/config' method='get'>");
