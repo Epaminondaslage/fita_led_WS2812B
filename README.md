@@ -322,9 +322,10 @@ Instale via Gerenciador de Bibliotecas da IDE Arduino:
 
 A interface web permite:
 
-- Selecionar efeitos (lista suspensa)
+- Selecionar efeitos - botões
 - Ajustar brilho (slider 0–255)
 - Ajustar velocidade (slider 1–200)
+- Desligar a fita
 
 --- 
 
