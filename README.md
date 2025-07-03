@@ -243,7 +243,6 @@ Este projeto permite controlar uma fita de LED WS2812B (NeoPixel) com até 400 L
 - Modo "Desligar Fita"
 - IP fixo configurado no ESP32
 - Reset automático de variáveis ao mudar o efeito
-- Código bem comentado para fácil manutenção e expansão
 
 ---
 
@@ -270,7 +269,6 @@ Este projeto permite controlar uma fita de LED WS2812B (NeoPixel) com até 400 L
 
 ---
 
----
 ## 🔧 Conexões da fita ao ESP32 Wroom DEV Kit
 
 | Fita WS2812B | ESP32                  |
@@ -285,7 +283,7 @@ Este projeto permite controlar uma fita de LED WS2812B (NeoPixel) com até 400 L
 
 ## 📶 Configuração de Rede
 
-O ESP32 é configurado com IP estático:
+O ESP32 é configurado com IP estático (a rotina para DHCP está comentada e pode ser utilizada caso nao desejar ip fixo):
 
 - **IP Local**: `10.0.2.240`
 - **Gateway**: `10.0.2.1`
