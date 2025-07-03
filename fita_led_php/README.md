@@ -1,5 +1,5 @@
 
-# Controle de Fitas de LED WS2812B via PHP e AJAX
+# X. Controle de Fitas de LED WS2812B via PHP e AJAX
 
 Este projeto permite o controle simultâneo de até **3 fitas de LED WS2812B** conectadas a dispositivos ESP32 com IP fixo, por meio de uma interface web clara, responsiva e sensível ao toque.
 
