@@ -46,7 +46,7 @@ const char* pass = "epaminondas";
 WiFiServer server(80);
 
 // Variáveis de controle
-int efeitoAtual = 13; // Começa desligado
+int efeitoAtual = 16; // Ajuste aqui para o efeito inicial da fita
 int brilho = 100;
 int velocidade = 50;
 unsigned long ultimoTempo = 0;
@@ -164,7 +164,9 @@ void loop() {
       "Vermelho", "Arco-Íris Rotativo", "Progressivo",
       "Ligar Sequencial", "Chuva de Estrelas","Polícia","Explosão Central"
     };
-    for (int i = 0; i < 13; i++) {
+
+    // este loop deve ser ajustado para o número de efeitos
+    for (int i = 0; i < 15; i++) {
       String classe = (efeitoAtual == i ? "selected" : "");
       client.println("<button type='submit' name='efeito' value='" + String(i) + "' class='" + classe + "'>" + nomes[i] + "</button>");
     }
@@ -332,13 +334,13 @@ void efeitoProgressivoPorSetores() {
 
 // === Efeito Ligar em Sequencia ===
 void efeitoAcenderSequencial() {
-  static int ledAtual = 0;
   if (ledAtual < NUM_LEDS) {
-    strip.setPixelColor(ledAtual, strip.Color(255, 160, 60));
+    strip.setPixelColor(ledAtual, strip.Color(255, 160, 60)); // cor âmbar
     strip.show();
     ledAtual++;
   }
 }
+
 
 // === Efeito Estrelas que Piscam ===
 void efeitoChuvaDeEstrelas() {
