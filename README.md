@@ -15,7 +15,7 @@ Ao longo deste material, você encontrará explicações sobre os princípios de
 - [VII. Controle da Fita WS2812B com Arduino UNO R4 WiFi](#vii-controle-da-fita-ws2812b-com-arduino-uno-r4-wifi)
 - [VIII. Fita de LED WS2815](Fita-de-LED-WS2815.md)
 - [IX. Tasmota com fitas de LED endereçáveis](fitas_tasmota.md)
-- [X. Painel de Controle de Fitas de LED em PHP](./fita_led_php/readme.md)
+- [X. Painel de Controle de Fitas de LED em PHP](https://github.com/Epaminondaslage/fita_led_WS2812B/tree/main/fita_led_php))
 - [XI. Comparativo entre fitas de LED Endereçáveis](modelos_fitas_led.md)
 
 
