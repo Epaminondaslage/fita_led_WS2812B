@@ -230,10 +230,7 @@ Possui suporte a protocolos como **MQTT**, **HTTP**, e bibliotecas como **ESPAsy
 
 ## 📋 Descrição
 
-## 📋 Descrição
-
 Este projeto permite controlar uma fita de LED WS2812B (NeoPixel) com até 400 LEDs usando um ESP32, via Wi-Fi, com uma interface web responsiva. O sistema conta com **15 efeitos visuais** pré-programados, controle de **brilho**, **velocidade** dos efeitos, **desligamento**, e **IP fixo** para facilitar a integração com sistemas externos (como painéis em PHP).
-
 
 ---
 
@@ -250,7 +247,7 @@ Este projeto permite controlar uma fita de LED WS2812B (NeoPixel) com até 400 L
 
 ---
 
-## 🎨 Efeitos Disponíveis
+## 🎨 Efeitos Disponibilizados
 
 | ID  | Nome do Efeito           |
 |-----|--------------------------|
@@ -329,6 +326,7 @@ A interface web permite:
 - Ajustar brilho (slider 0–255)
 - Ajustar velocidade (slider 1–200)
 
+--- 
 
 ## ⚙️ Ajustes Opcionais
 
@@ -336,6 +334,7 @@ A interface web permite:
 - **Pino de dados:** edite `LED_PIN`
 
 ---
+
 ## 🔄 Reset de Variáveis
 
 Ao mudar de efeito, o sistema automaticamente:
