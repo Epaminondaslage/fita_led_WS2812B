@@ -36,9 +36,11 @@ fita_led_php/
 ## 🧠 Como Funciona
 
 - Os botões HTML ativam funções JavaScript que:
+
   1. Capturam os parâmetros escolhidos (efeito, brilho, velocidade)
   2. Identificam quais fitas estão ativas
   3. Enviam requisições AJAX ao `enviar.php` para aplicar os comandos
+
 - O `enviar.php` itera sobre os IPs selecionados e envia comandos HTTP do tipo `GET` diretamente ao ESP32, no formato esperado por ele:
   
   ```
