@@ -1,5 +1,5 @@
 
-# IX 💡 Controle de Fitas de LED endereçáveis com Tasmota e ESP32-WROOM
+# IX Controle de Fitas de LED endereçáveis com Tasmota e ESP32-WROOM
 
 Uso do firmware **Tasmota** em um **ESP32-WROOM** para controlar fitas de LED endereçáveis (individuais), como **WS2812B**, **WS2815**, **SK6812**, entre outras, com controle via interface web, MQTT ou comandos diretos.
 
