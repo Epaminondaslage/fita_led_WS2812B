@@ -230,19 +230,45 @@ Possui suporte a protocolos como **MQTT**, **HTTP**, e bibliotecas como **ESPAsy
 
 ## 📋 Descrição
 
-Este projeto permite controlar uma fita de LEDs WS2812B (NeoPixel) utilizando um ESP32 com interface web. Através de um navegador conectado à mesma rede, o usuário pode selecionar efeitos de iluminação, ajustar o brilho e modificar a velocidade dos efeitos.
+Este projeto permite controlar uma fita de LED WS2812B (NeoPixel) com até 400 LEDs usando um ESP32, via Wi-Fi, com uma interface web responsiva. O sistema conta com **15 efeitos visuais** pré-programados, controle de **brilho**, **velocidade** dos efeitos, **desligamento**, e **IP fixo** para facilitar a integração com sistemas externos (como painéis em PHP).
 
 ---
 
-## 🎯 Funcionalidades
+## 🚀 Funcionalidades
 
-- Conexão Wi-Fi com rede local
-- Interface web simples hospedada no ESP32 (servidor HTTP embutido)
-- Controle de **11 efeitos visuais**
-- Ajuste de **brilho (0–255)** e **velocidade (1–200)**
-- Efeitos implementados **sem uso de `delay()`** (não bloqueantes)
+- Acesso via navegador (interface HTML responsiva para celular e desktop)
+- 15 efeitos visuais com transições suaves
+- Controle de brilho (0 a 255)
+- Controle de velocidade (inversamente proporcional à responsividade)
+- Modo "Desligar Fita"
+- IP fixo configurado no ESP32
+- Reset automático de variáveis ao mudar o efeito
 
 ---
+
+## 🎨 Efeitos Disponibilizados
+
+| ID  | Nome do Efeito           |
+|-----|--------------------------|
+| 0   | Confete                  |
+| 1   | Cometa                   |
+| 2   | Piscar                   |
+| 3   | Arco-Íris                |
+| 4   | Branco Frio              |
+| 5   | Branco Quente            |
+| 6   | Azul                     |
+| 7   | Verde                    |
+| 8   | Vermelho                 |
+| 9   | Arco-Íris Rotativo       |
+| 10  | Progressivo por Setores  |
+| 11  | Ligar Sequencial         |
+| 12  | Chuva de Estrelas        |
+| 13  | Giro de Polícia          |
+| 14  | Explosão Central         |
+| 15  | **Desligar Fita**        |
+
+---
+
 ## 🔧 Conexões da fita ao ESP32 Wroom DEV Kit
 
 | Fita WS2812B | ESP32                  |
@@ -255,9 +281,15 @@ Este projeto permite controlar uma fita de LEDs WS2812B (NeoPixel) utilizando um
 
 ---
 
-## 📶 Configuração de Rede Wi-Fi
+## 📶 Configuração de Rede
 
-No código, edite as seguintes variáveis:
+O ESP32 é configurado com IP estático (a rotina para DHCP está comentada e pode ser utilizada caso nao desejar ip fixo):
+
+- **IP Local**: `10.0.2.240`
+- **Gateway**: `10.0.2.1`
+- **Subnet**: `255.255.255.0`
+- **DNS Primário**: `8.8.8.8`
+- **DNS Secundário**: `8.8.4.4`
 
 ```cpp
 const char* ssid = "seu ssid";   // Nome da rede Wi-Fi
@@ -288,35 +320,44 @@ Instale via Gerenciador de Bibliotecas da IDE Arduino:
 
 A interface web permite:
 
-- Selecionar efeitos (lista suspensa)
+- Selecionar efeitos - botões
 - Ajustar brilho (slider 0–255)
 - Ajustar velocidade (slider 1–200)
+- Desligar a fita
 
-### Efeitos Disponíveis
-
-| Valor | Efeito               |
-|-------|----------------------|
-| 1     | Cometa               |
-| 2     | Piscar               |
-| 3     | Arco-Íris            |
-| 4     | Branco Frio          |
-| 5     | Branco Quente        |
-| 6     | Azul                 |
-| 7     | Verde                |
-| 8     | Vermelho             |
-| 9     | Arco-Íris Rotativo   |
-| 10    | Progrtessivo Setores |
-| 11    | Desliga leds         |
-
----
+--- 
 
 ## ⚙️ Ajustes Opcionais
 
 - **Número de LEDs:** edite `NUM_LEDS`
 - **Pino de dados:** edite `LED_PIN`
 
+---
+
+## 🔄 Reset de Variáveis
+
+Ao mudar de efeito, o sistema automaticamente:
+
+- Limpa o display
+- Zera variáveis de animação
+- Reposiciona contadores
+
+Isso garante **transições suaves e corretas** entre efeitos.
 
 ---
+
+## 🌐 Integração com PHP ou outros sistemas
+
+Você pode controlar este sistema via requisições HTTP GET:
+
+```
+http://IP_da_Fita/config?efeito=3
+http://IP_da_Fita/config?brilho=120
+http://IP_da_Fita/config?vel=100
+```
+
+---
+
 
 ## VI. Controle da Fita WS2812B com Tasmota
 
