@@ -2,7 +2,7 @@
   ================================================================================
   Projeto: Controle de Fita de LED WS2812B com ESP32
   Autor:   Epaminondas de Souza Lage
-  Versão:  1.12
+  Versão:  1.11
 
   Descrição:
     Controle de uma fita WS2812B via Wi-Fi com interface HTML. Permite escolher 
@@ -11,12 +11,11 @@
 
   Funcionalidades:
     - Interface responsiva via navegador
-    - 15 efeitos visuais
+    - 13 efeitos visuais
     - Ajuste de brilho e velocidade
     - Fita inicia desligada
     - Mostra aviso se fita estiver ausente
     - Reset de variáveis ao trocar de efeito
-    - IP estático
 
   ================================================================================
 */
@@ -48,45 +47,12 @@ uint8_t arcoIrisOffset = 0;
 int ledAtual = 0;
 int setor = 0;
 float fase = 0.0;
-int passo = 0;
 
-/* Setup para dhcp
 void setup() {
   Serial.begin(115200);
   strip.begin();
   strip.setBrightness(brilho);
   strip.show();
-
-  WiFi.begin(ssid, pass);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.print(".");
-  }
-
-  Serial.println("\nWiFi conectado.");
-  Serial.print("IP: ");
-  Serial.println(WiFi.localIP());
-  server.begin();
-}
-*/
-
-
-// Setup para ip estático
-void setup() {
-  Serial.begin(115200);
-  strip.begin();
-  strip.setBrightness(brilho);
-  strip.show();
-
-  IPAddress local_IP(10, 0, 2, 240);
-  IPAddress gateway(10, 0, 2, 1);
-  IPAddress subnet(255, 255, 255, 0);
-  IPAddress primaryDNS(8, 8, 8, 8);
-  IPAddress secondaryDNS(8, 8, 4, 4);
-
-  if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
-    Serial.println("❌ Falha ao configurar IP estático");
-  }
 
   WiFi.begin(ssid, pass);
   while (WiFi.status() != WL_CONNECTED) {
@@ -153,7 +119,7 @@ void loop() {
       "Confete", "Cometa", "Piscar", "Arco-Íris",
       "Branco Frio", "Branco Quente", "Azul", "Verde",
       "Vermelho", "Arco-Íris Rotativo", "Progressivo",
-      "Ligar Sequencial", "Chuva de Estrelas","Polícia","Explosão Central"
+      "Ligar Sequencial", "Chuva de Estrelas"
     };
     for (int i = 0; i < 13; i++) {
       String classe = (efeitoAtual == i ? "selected" : "");
@@ -168,9 +134,7 @@ void loop() {
     client.println("<input type='range' min='1' max='200' value='" + String(201 - velocidade) + "' onchange=\"location.href='/config?vel='+this.value\">");
 
     client.println("<form action='/config' method='get' style='margin-top:20px;'>");
-
-    // A variável "value" deve ser modificada todas as vezes que mudar a quantidade de efeitos. Ela aponta para o efeito "desliga"
-    client.println("<input type='hidden' name='efeito' value='15'>");
+    client.println("<input type='hidden' name='efeito' value='13'>");
     client.println("<button type='submit' style='background:#000;color:#fff;'>Desligar Fita</button>");
     client.println("</form>");
 
@@ -198,9 +162,7 @@ void loop() {
       case 10: efeitoProgressivoPorSetores(); break;
       case 11: efeitoAcenderSequencial(); break;
       case 12: efeitoChuvaDeEstrelas(); break;
-      case 13: efeitoPolicia(); break;
-      case 14: efeitoExplosaoCentral(); break;  
-      case 15: efeitoCorFixa(0, 0, 0); break;
+      case 13: efeitoCorFixa(0, 0, 0); break;
       
     }
   }
@@ -214,11 +176,9 @@ void resetarEfeitos() {
   ledAtual = 0;
   setor = 0;
   fase = 0.0;
-  passo = 0;  
   strip.clear();
   strip.show();
 }
-
 
 String getParam(String req, String key) {
   int start = req.indexOf(key + "=");
@@ -328,44 +288,6 @@ void efeitoChuvaDeEstrelas() {
   }
   strip.show();
 }
-
-void efeitoPolicia() {
-  static bool alterna = false;
-  int metade = NUM_LEDS / 2;
-
-  // Define as cores conforme o estado atual
-  for (int i = 0; i < NUM_LEDS; i++) {
-    if (alterna) {
-      strip.setPixelColor(i, i < metade ? strip.Color(255, 0, 0) : strip.Color(0, 0, 255)); // vermelho / azul
-    } else {
-      strip.setPixelColor(i, i < metade ? strip.Color(0, 0, 255) : strip.Color(255, 0, 0)); // azul / vermelho
-    }
-  }
-
-  strip.show();
-  alterna = !alterna; // Inverte para o próximo ciclo
-}
-
-void efeitoExplosaoCentral() {
-  static int passo = 0;
-  int centro = NUM_LEDS / 2;
-
-  strip.clear();
-
-  for (int i = 0; i <= passo; i++) {
-    int esquerda = centro - i;
-    int direita = centro + i;
-
-    if (esquerda >= 0) strip.setPixelColor(esquerda, strip.Color(255, 200, 50)); // cor de explosão
-    if (direita < NUM_LEDS) strip.setPixelColor(direita, strip.Color(255, 200, 50));
-  }
-
-  strip.show();
-  passo++;
-
-  if (centro + passo >= NUM_LEDS && centro - passo < 0) passo = 0; // reinicia o efeito
-}
-
 
 uint32_t wheel(byte pos) {
   if (pos < 85) return strip.Color(pos * 3, 255 - pos * 3, 0);
