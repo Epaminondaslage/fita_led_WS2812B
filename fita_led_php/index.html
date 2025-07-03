@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Controle de Fitas de LED</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <h1>Controle de Fitas WS2812B</h1>
+
+  <div class="fita-selector">
+    <label><input type="checkbox" class="fita" value="1" /> Fita 1</label>
+    <label><input type="checkbox" class="fita" value="2" /> Fita 2</label>
+    <label><input type="checkbox" class="fita" value="3" /> Fita 3</label>
+  </div>
+
+  <div class="efeitos">
+    <button data-efeito="0">Confete</button>
+    <button data-efeito="1">Cometa</button>
+    <button data-efeito="2">Piscar</button>
+    <button data-efeito="3">Arco-Íris</button>
+    <button data-efeito="4">Branco Frio</button>
+    <button data-efeito="5">Branco Quente</button>
+    <button data-efeito="6">Azul</button>
+    <button data-efeito="7">Verde</button>
+    <button data-efeito="8">Vermelho</button>
+    <button data-efeito="9">Arco-Íris Rotativo</button>
+    <button data-efeito="10">Progressivo</button>
+    <button data-efeito="11">Ligar Sequencial</button>
+    <button data-efeito="12">Chuva de Estrelas</button>
+    <button data-efeito="13">Polícia</button>
+    <button data-efeito="14">Explosão Central</button>
+    <button data-efeito="15">Desligar</button>
+  </div>
+
+  <div class="controles">
+    <label>Brilho:
+      <input type="range" id="brilho" min="0" max="255" />
+    </label>
+    <label>Velocidade:
+      <input type="range" id="velocidade" min="1" max="200" />
+    </label>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

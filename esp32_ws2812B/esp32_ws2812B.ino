@@ -24,9 +24,19 @@
 #include <WiFi.h>
 #include <Adafruit_NeoPixel.h>
 
+// ˜Configuração em qual pin esta a fita e numero de leds que ela contém
 #define LED_PIN 5
 #define NUM_LEDS 400
 
+/*
+Adafruit_NeoPixel
+É a classe fornecida pela biblioteca Adafruit que controla LEDs endereçáveis como WS2812B. 
+strip:É o nome da instância (objeto). Você usa ele depois para controlar os LEDs, ex.: strip.begin(), strip.setPixelColor(), strip.show(), etc.
+NUM_LEDS:Número de LEDs conectados. Exemplo: 400.
+LED_PIN:Pino do ESP32 que está conectado à entrada de dados da fita WS2812B.
+NEO_GRB:Define a ordem dos canais de cor (Green, Red, Blue). A maioria das WS2812B usa GRB, mas alguns modelos usam RGB ou BRG.
+NEO_KHZ800:Define a frequência do protocolo de comunicação, que no caso da WS2812B é 800kHz.
+*/
 Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 // Configurações Wi-Fi
@@ -40,7 +50,6 @@ int efeitoAtual = 13; // Começa desligado
 int brilho = 100;
 int velocidade = 50;
 unsigned long ultimoTempo = 0;
-
 int frameAtual = 0;
 bool estadoPiscar = false;
 int posCometa = 0;
@@ -181,7 +190,7 @@ void loop() {
     client.println("</body></html>");
     client.stop();
   }
-
+// Menu de Efeitos
   if (millis() - ultimoTempo >= velocidade) {
     ultimoTempo = millis();
     switch (efeitoAtual) {
@@ -206,6 +215,19 @@ void loop() {
   }
 }
 
+String getParam(String req, String key) {
+  int start = req.indexOf(key + "=");
+  if (start == -1) return "";
+  start += key.length() + 1;
+  int end = req.indexOf('&', start);
+  if (end == -1) end = req.indexOf(' ', start);
+  return req.substring(start, end);
+}
+
+// === Efeitos Implantados ===
+
+// === Resetar Efeitos na Fita ===
+
 void resetarEfeitos() {
   frameAtual = 0;
   estadoPiscar = false;
@@ -219,24 +241,14 @@ void resetarEfeitos() {
   strip.show();
 }
 
-
-String getParam(String req, String key) {
-  int start = req.indexOf(key + "=");
-  if (start == -1) return "";
-  start += key.length() + 1;
-  int end = req.indexOf('&', start);
-  if (end == -1) end = req.indexOf(' ', start);
-  return req.substring(start, end);
-}
-
-// === Efeitos ===
-
+// === Efeito Confete ===
 void efeitoConfete() {
   int p = random(NUM_LEDS);
   strip.setPixelColor(p, strip.Color(random(255), random(255), random(255)));
   strip.show();
 }
 
+// === Efeito Cometa ===
 void efeitoCometa() {
   int cauda = 15;
   strip.clear();
@@ -252,13 +264,14 @@ void efeitoCometa() {
   if (posCometa > NUM_LEDS + cauda) posCometa = 0;
 }
 
+// === Efeito Piscar leds ===
 void efeitoPiscar() {
   if (estadoPiscar) strip.fill(strip.Color(255, 255, 255));
   else strip.clear();
   strip.show();
   estadoPiscar = !estadoPiscar;
 }
-
+// === Efeito Arco Iris ===
 void efeitoArcoIris() {
   for (int i = 0; i < NUM_LEDS; i++) {
     strip.setPixelColor(i, wheel((i + arcoIrisOffset) & 255));
@@ -267,6 +280,7 @@ void efeitoArcoIris() {
   arcoIrisOffset++;
 }
 
+// === Efeito Arco Iris Rotativo ===
 void efeitoArcoIrisRotativo() {
   static uint16_t offset = 0;
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -277,6 +291,19 @@ void efeitoArcoIrisRotativo() {
   offset++;
 }
 
+//Gera cores RGB suaves em sequência, formando um espectro de arco-íris contínuo
+uint32_t wheel(byte pos) {
+  if (pos < 85) return strip.Color(pos * 3, 255 - pos * 3, 0);
+  else if (pos < 170) {
+    pos -= 85;
+    return strip.Color(255 - pos * 3, 0, pos * 3);
+  } else {
+    pos -= 170;
+    return strip.Color(0, pos * 3, 255 - pos * 3);
+  }
+}
+
+// === Efeito Cor Fixa ===
 void efeitoCorFixa(uint8_t r, uint8_t g, uint8_t b) {
   for (int i = 0; i < NUM_LEDS; i++) {
     strip.setPixelColor(i, strip.Color(r, g, b));
@@ -284,6 +311,7 @@ void efeitoCorFixa(uint8_t r, uint8_t g, uint8_t b) {
   strip.show();
 }
 
+// === Efeito Cor progressiva por setor ===
 void efeitoProgressivoPorSetores() {
   static int setor = 0;
   int totalSetores = 10;
@@ -302,6 +330,7 @@ void efeitoProgressivoPorSetores() {
   if (setor >= totalSetores) setor = 0;
 }
 
+// === Efeito Ligar em Sequencia ===
 void efeitoAcenderSequencial() {
   static int ledAtual = 0;
   if (ledAtual < NUM_LEDS) {
@@ -311,6 +340,7 @@ void efeitoAcenderSequencial() {
   }
 }
 
+// === Efeito Estrelas que Piscam ===
 void efeitoChuvaDeEstrelas() {
   for (int i = 0; i < NUM_LEDS; i++) {
     uint32_t cor = strip.getPixelColor(i);
@@ -329,6 +359,7 @@ void efeitoChuvaDeEstrelas() {
   strip.show();
 }
 
+// === Efeito Giroscópio Polícia ===
 void efeitoPolicia() {
   static bool alterna = false;
   int metade = NUM_LEDS / 2;
@@ -346,6 +377,7 @@ void efeitoPolicia() {
   alterna = !alterna; // Inverte para o próximo ciclo
 }
 
+// === Efeito Explosao Centro da Fita ===
 void efeitoExplosaoCentral() {
   static int passo = 0;
   int centro = NUM_LEDS / 2;
@@ -367,13 +399,3 @@ void efeitoExplosaoCentral() {
 }
 
 
-uint32_t wheel(byte pos) {
-  if (pos < 85) return strip.Color(pos * 3, 255 - pos * 3, 0);
-  else if (pos < 170) {
-    pos -= 85;
-    return strip.Color(255 - pos * 3, 0, pos * 3);
-  } else {
-    pos -= 170;
-    return strip.Color(0, pos * 3, 255 - pos * 3);
-  }
-}
