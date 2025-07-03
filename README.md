@@ -1,4 +1,4 @@
-## Controle de Fitas de LED Endereçáveis com ESP32, Tasmota e Arduino
+## Controle de Fitas de LED Endereçáveis com ESP32, Tasmota, Arduino e um Painel em php
 
 Este repositório reúne uma coletânea de conteúdos técnicos e práticos sobre o controle de fitas de LED endereçáveis, com foco especial nos modelos WS2812B e WS2815. O objetivo é oferecer uma visão completa — do funcionamento básico das fitas até a implementação de sistemas de controle avançados via Wi-Fi, utilizando plataformas como ESP32-WROOM, Tasmota e Arduino UNO R4 WiFi.
 
@@ -15,7 +15,8 @@ Ao longo deste material, você encontrará explicações sobre os princípios de
 - [VII. Controle da Fita WS2812B com Arduino UNO R4 WiFi](#vii-controle-da-fita-ws2812b-com-arduino-uno-r4-wifi)
 - [VIII. Fita de LED WS2815](Fita-de-LED-WS2815.md)
 - [IX. Tasmota com fitas de LED endereçáveis](fitas_tasmota.md)
-- [X. Comparativo entre fitas de LED Endereçáveis](modelos_fitas_led.md)
+- [X. Painel de Controle de Fitas de LED em PHP](./fita_led_php/readme.md)
+- [XI. Comparativo entre fitas de LED Endereçáveis](modelos_fitas_led.md)
 
 
 ---
