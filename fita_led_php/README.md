@@ -168,3 +168,52 @@ Se a resposta for falha (`catch()`), uma mensagem de erro é exibida no rodapé 
 4. Dispositivo ESP aplica o efeito.
 
 ---
+# Backend no ESP32 — Controle de Fita de LED WS2812B
+
+## 📍 Objetivo
+O backend embarcado no **ESP32** tem como finalidade receber comandos via requisições HTTP (GET) para controlar **fita(s) de LED WS2812B**, com suporte a diferentes efeitos visuais, ajuste de brilho e velocidade.
+
+---
+
+## 🔧 Funcionalidades
+
+- **Servidor HTTP local**: O ESP32 cria um servidor acessível na rede (ex: `http://10.0.2.242`).
+- **Roteamento de comandos via URL**: O endpoint `/config` é usado para configurar os parâmetros da fita.
+- **Parâmetros esperados via GET**:
+  - `efeito`: ID do efeito visual (ex: `?efeito=2`)
+  - `brilho`: Intensidade de brilho entre 0 e 255 (ex: `?brilho=150`)
+  - `vel`: Velocidade da animação (ex: `?vel=50`)
+
+Exemplo completo:
+```
+http://10.0.2.242/config?efeito=2&brilho=150&vel=50
+```
+
+---
+
+## 📁 Estrutura interna no ESP32
+
+- **Bibliotecas Utilizadas**:
+  - `WiFi.h` – Conexão à rede.
+  - `WebServer.h` – Servidor HTTP local.
+  - `Adafruit_NeoPixel.h` – Controle da fita WS2812B.
+
+---
+
+## 🔄 Fluxo de funcionamento
+
+1. ESP32 conecta-se ao Wi-Fi com IP fixo.
+2. Inicia servidor web (`WebServer`) escutando na porta 80.
+3. Ao receber `GET /config` com os parâmetros:
+   - Atualiza variáveis globais do efeito, brilho e velocidade.
+   - Reinicializa ou troca o efeito rodando.
+4. Efeitos são executados de forma assíncrona em loop.
+5. O ESP32 responde com uma página HTML exibindo o estado atual.
+
+---
+
+## 🛡️ Observações
+
+- O ESP32 **não grava em EEPROM**; os parâmetros são voláteis.
+- O controle é **stateless**: sempre que um novo comando chega, ele substitui o anterior.
+- A interface é compatível com navegadores e scripts backend (como PHP).
