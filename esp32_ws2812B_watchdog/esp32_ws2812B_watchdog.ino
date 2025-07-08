@@ -68,7 +68,7 @@ void setup() {
   strip.setBrightness(brilho);
   strip.show();
 
-  IPAddress local_IP(10, 0, 2, 242);
+  IPAddress local_IP(10, 0, 2, 240);
   IPAddress gateway(10, 0, 2, 1);
   IPAddress subnet(255, 255, 255, 0);
   IPAddress primaryDNS(8, 8, 8, 8);
