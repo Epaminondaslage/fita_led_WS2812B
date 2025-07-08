@@ -17,14 +17,16 @@
     - Mostra aviso se fita estiver ausente
     - Reset de variáveis ao trocar de efeito
     - IP estático
+    - Watchdog incluso
 
   ================================================================================
 */
 
 #include <WiFi.h>
 #include <Adafruit_NeoPixel.h>
+#include "esp_task_wdt.h"
 
-// ˜Configuração em qual pin esta a fita e numero de leds que ela contém
+// Configuração em qual pin esta a fita e numero de leds que ela contém
 #define LED_PIN 5
 #define NUM_LEDS 400
 
@@ -59,27 +61,6 @@ int setor = 0;
 float fase = 0.0;
 int passo = 0;
 
-/* Setup para dhcp
-void setup() {
-  Serial.begin(115200);
-  strip.begin();
-  strip.setBrightness(brilho);
-  strip.show();
-
-  WiFi.begin(ssid, pass);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.print(".");
-  }
-
-  Serial.println("\nWiFi conectado.");
-  Serial.print("IP: ");
-  Serial.println(WiFi.localIP());
-  server.begin();
-}
-*/
-
-
 // Setup para ip estático
 void setup() {
   Serial.begin(115200);
@@ -107,6 +88,16 @@ void setup() {
   Serial.print("IP: ");
   Serial.println(WiFi.localIP());
   server.begin();
+
+   esp_err_t result = esp_task_wdt_add(NULL);
+    if (result == ESP_OK) {
+      Serial.println("⏱️ Watchdog ativado (já estava inicializado).");
+    } else {
+      Serial.print("❌ Erro ao ativar Watchdog: ");
+      Serial.println(result);
+}
+
+
 }
 
 void loop() {
@@ -152,7 +143,6 @@ void loop() {
       client.println("@media (max-width:600px){button{width:100%;max-width:300px;}}");
       client.println("</style></head><body>");
       client.println("<h2>Fita de LED: Passarela</h2>");
-
 
     // Botões de efeito
     client.println("<form action='/config' method='get'>");
@@ -215,6 +205,9 @@ void loop() {
       
     }
   }
+  // Alimenta o watchdog
+  esp_task_wdt_reset(); 
+
 }
 
 String getParam(String req, String key) {
