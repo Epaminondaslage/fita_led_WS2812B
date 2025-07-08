@@ -5,9 +5,6 @@ Este projeto permite o controle simultâneo de até **3 fitas de LED WS2812B** c
 
 ## 📂 Estrutura de Diretórios
 
-
-## 📁 Estrutura de Arquivos
-
 ```
 fita_led_php/
 ├── index.html              # Interface principal com os controles para as fitas
@@ -22,7 +19,7 @@ fita_led_php/
 
 ---
 
-## Descrição Técnica dos Arquivos
+## Descrição dos Arquivos
 
 ### `index.html`
 Interface principal do usuário. Contém:
@@ -78,16 +75,6 @@ Backend em PHP que:
   - Logs de ações realizadas
   - Validações ou restrições de comando
 
-## ✅ Funcionalidades
-
-- Seleção de uma ou mais fitas (Fita 1, Fita 2, Fita 3)
-- 15 efeitos visuais com botão exclusivo para cada um
-- Botão "Desligar Fita"
-- Controle de brilho (0–255)
-- Controle de velocidade (1–200, onde menor = mais lento)
-- Aplicação simultânea de comandos em várias fitas
-- Interface leve, responsiva e otimizada para telas pequenas (mobile-friendly)
-- Feedback visual nos botões selecionados
 
 ---
 
@@ -100,6 +87,18 @@ Backend em PHP que:
 - **Dispositivos ESP (10.0.2.240-242)**: Executam o efeito de iluminação via `http://<IP>/config`.
 
 ---
+
+## ✅ Funcionalidades
+
+- Seleção de uma ou mais fitas (Fita 1, Fita 2, Fita 3)
+- 15 efeitos visuais com botão exclusivo para cada um
+- Botão "Desligar Fita"
+- Controle de brilho (0–255)
+- Controle de velocidade (1–200, onde menor = mais lento)
+- Aplicação simultânea de comandos em várias fitas
+- Interface leve, responsiva e otimizada para telas pequenas (mobile-friendly)
+- Feedback visual nos botões selecionados
+
 
 ## 🔁 Fluxo de Requisição
 
@@ -169,5 +168,3 @@ Se a resposta for falha (`catch()`), uma mensagem de erro é exibida no rodapé 
 4. Dispositivo ESP aplica o efeito.
 
 ---
-
--
