@@ -1,26 +1,35 @@
 <?php
-$ips = [
-  "1" => "10.0.0.240",
-  "2" => "10.0.0.241",
-  "3" => "10.0.0.242"
+$mapa = [
+  "1" => "10.0.2.240",
+  "2" => "10.0.2.241",
+  "3" => "10.0.2.242"
 ];
 
-$fita = $_GET['fita'] ?? '';
-$efeito = $_GET['efeito'] ?? '';
-$brilho = $_GET['brilho'] ?? '';
-$vel = $_GET['vel'] ?? '';
+$fita = $_GET['fita'] ?? null;
+$efeito = $_GET['efeito'] ?? null;
+$brilho = $_GET['brilho'] ?? null;
+$vel = $_GET['vel'] ?? null;
 
-if (!isset($ips[$fita])) exit;
+if (!$fita || !isset($mapa[$fita])) {
+  http_response_code(400);
+  exit("Fita inválida ou não informada.");
+}
+if ($efeito === null || $brilho === null || $vel === null) {
+  http_response_code(400);
+  exit("Parâmetros incompletos.");
+}
 
-$url = "http://{$ips[$fita]}/config?";
-$params = [];
+$ip = $mapa[$fita];
+$url = "http://$ip/config?efeito=$efeito&brilho=$brilho&vel=$vel";
 
-if ($efeito !== '') $params[] = "efeito={$efeito}";
-if ($brilho !== '') $params[] = "brilho={$brilho}";
-if ($vel !== '') $params[] = "vel={$vel}";
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$resposta = curl_exec($ch);
+$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
 
-$url .= implode("&", $params);
-
-// Envia a requisição
-file_get_contents($url);
+echo "Comando enviado para fita $fita ($ip)\n";
+echo "URL: $url\n";
+echo "Resposta HTTP: $http_code\n";
 ?>
