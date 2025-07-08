@@ -170,6 +170,8 @@ Se a resposta for falha (`catch()`), uma mensagem de erro é exibida no rodapé 
 ---
 # Backend no ESP32 — Controle de Fita de LED WS2812B
 
+o .ino encontra-se em:  https://github.com/Epaminondaslage/fita_led_WS2812B/tree/main/esp32_ws2812B_watchdog
+
 ## 📍 Objetivo
 O backend embarcado no **ESP32** tem como finalidade receber comandos via requisições HTTP (GET) para controlar **fita(s) de LED WS2812B**, com suporte a diferentes efeitos visuais, ajuste de brilho e velocidade.
 
