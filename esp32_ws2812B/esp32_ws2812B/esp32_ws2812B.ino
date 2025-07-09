@@ -399,5 +399,3 @@ void efeitoExplosaoCentral() {
 
   if (centro + passo >= NUM_LEDS && centro - passo < 0) passo = 0; // reinicia o efeito
 }
-
-
