@@ -29,7 +29,6 @@
 // Configuração em qual pin esta a fita e numero de leds que ela contém
 #define LED_PIN 5
 #define NUM_LEDS 400
-#define LED_PLACA 2  // LED embutido da maioria dos ESP32
 
 /*
 Adafruit_NeoPixel
@@ -62,11 +61,8 @@ int setor = 0;
 float fase = 0.0;
 int passo = 0;
 
-
+// Setup para ip estático
 void setup() {
-  pinMode(LED_PLACA, OUTPUT);
-  digitalWrite(LED_PLACA, HIGH); // Apaga LED inicialmente (ESP32 geralmente é ativo em LOW)
-
   Serial.begin(115200);
   strip.begin();
   strip.setBrightness(brilho);
@@ -83,39 +79,26 @@ void setup() {
   }
 
   WiFi.begin(ssid, pass);
-
-  unsigned long inicio = millis();
-  while (WiFi.status() != WL_CONNECTED && millis() - inicio < 15000) {
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
     Serial.print(".");
-    digitalWrite(LED_PLACA, LOW); delay(200);  // Pisca LED
-    digitalWrite(LED_PLACA, HIGH); delay(300);
-    // ⚠️ Não chamamos esp_task_wdt_reset() aqui ainda
   }
 
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("\n✅ WiFi conectado.");
-    Serial.print("IP: ");
-    Serial.println(WiFi.localIP());
-    server.begin();
+  Serial.println("\nWiFi conectado.");
+  Serial.print("IP: ");
+  Serial.println(WiFi.localIP());
+  server.begin();
 
-    digitalWrite(LED_PLACA, LOW); // LED aceso fixo = conectado
-
-    // 🛠️ Ativa watchdog apenas agora, após conexão
-    esp_err_t result = esp_task_wdt_add(NULL);
+   esp_err_t result = esp_task_wdt_add(NULL);
     if (result == ESP_OK) {
-      Serial.println("⏱️ Watchdog ativado.");
+      Serial.println("⏱️ Watchdog ativado (já estava inicializado).");
     } else {
       Serial.print("❌ Erro ao ativar Watchdog: ");
       Serial.println(result);
-    }
-
-  } else {
-    Serial.println("\n⚠️ Falha ao conectar ao WiFi (timeout). Continuando mesmo assim.");
-    digitalWrite(LED_PLACA, HIGH); // LED apagado = erro
-    // ❌ Não ativa watchdog se Wi-Fi falhou
-  }
 }
 
+
+}
 
 void loop() {
   WiFiClient client = server.available();
