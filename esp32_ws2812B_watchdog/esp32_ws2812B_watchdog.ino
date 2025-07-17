@@ -43,8 +43,8 @@ NEO_KHZ800:Define a frequência do protocolo de comunicação, que no caso da WS
 Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 // Configurações Wi-Fi
-const char* ssid = "PLT-DIR";
-const char* pass = "epaminondas";
+const char* ssid = "pedeserra";
+const char* pass = "planetfone";
 
 WiFiServer server(80);
 
@@ -72,8 +72,8 @@ void setup() {
   strip.setBrightness(brilho);
   strip.show();
 
-  IPAddress local_IP(10, 0, 2, 240);
-  IPAddress gateway(10, 0, 2, 1);
+  IPAddress local_IP(10, 0, 0, 10);
+  IPAddress gateway(10, 0, 0, 1);
   IPAddress subnet(255, 255, 255, 0);
   IPAddress primaryDNS(8, 8, 8, 8);
   IPAddress secondaryDNS(8, 8, 4, 4);
