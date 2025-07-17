@@ -2,7 +2,7 @@
   ================================================================================
   Projeto: Controle de Fita de LED WS2812B com ESP32
   Autor:   Epaminondas de Souza Lage
-  Versão:  1.12
+  Versão:  1.13
 
   Descrição:
     Controle de uma fita WS2812B via Wi-Fi com interface HTML. Permite escolher 
@@ -11,7 +11,7 @@
 
   Funcionalidades:
     - Interface responsiva via navegador
-    - 15 efeitos visuais
+    - 16 efeitos visuais
     - Ajuste de brilho e velocidade
     - Fita inicia desligada
     - Mostra aviso se fita estiver ausente
@@ -49,7 +49,7 @@ const char* pass = "epaminondas";
 WiFiServer server(80);
 
 // Variáveis de controle
-int efeitoAtual = 16; // Ajuste aqui para o efeito inicial da fita
+int efeitoAtual = 17; // Ajuste aqui para o efeito inicial da fita
 int brilho = 100;
 int velocidade = 50;
 unsigned long ultimoTempo = 0;
@@ -169,11 +169,11 @@ void loop() {
       "Confete", "Cometa", "Piscar", "Arco-Íris",
       "Branco Frio", "Branco Quente", "Azul", "Verde",
       "Vermelho", "Arco-Íris Rotativo", "Progressivo",
-      "Ligar Sequencial", "Chuva de Estrelas","Polícia","Explosão Central"
+      "Ligar Sequencial", "Chuva de Estrelas","Polícia","Explosão Central","Brasil"
     };
 
     // este loop deve ser ajustado para o número de efeitos
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < 16; i++) {
       String classe = (efeitoAtual == i ? "selected" : "");
       client.println("<button type='submit' name='efeito' value='" + String(i) + "' class='" + classe + "'>" + nomes[i] + "</button>");
     }
@@ -188,7 +188,7 @@ void loop() {
     client.println("<form action='/config' method='get' style='margin-top:20px;'>");
 
     // A variável "value" deve ser modificada todas as vezes que mudar a quantidade de efeitos. Ela aponta para o efeito "desliga"
-    client.println("<input type='hidden' name='efeito' value='15'>");
+    client.println("<input type='hidden' name='efeito' value='16'>");
     client.println("<button type='submit' style='background:#000;color:#fff;'>Desligar Fita</button>");
     client.println("</form>");
 
@@ -218,8 +218,8 @@ void loop() {
       case 12: efeitoChuvaDeEstrelas(); break;
       case 13: efeitoPolicia(); break;
       case 14: efeitoExplosaoCentral(); break;  
-      case 15: efeitoCorFixa(0, 0, 0); break;
-      
+      case 15: efeitoBrasil(); break;
+      case 16: efeitoCorFixa(0, 0, 0); break;
     }
   }
   // Alimenta o watchdog
@@ -411,3 +411,20 @@ void efeitoExplosaoCentral() {
 }
 
 
+// === Efeito Bandeira do Brasil ===
+void efeitoBrasil() {
+  static bool alterna = false;
+  int metade = NUM_LEDS / 2;
+
+  // Define as cores conforme o estado atual
+  for (int i = 0; i < NUM_LEDS; i++) {
+    if (alterna) {
+      strip.setPixelColor(i, i < metade ? strip.Color(0, 255, 0) : strip.Color(255, 255, 0)); // vermelho / azul
+    } else {
+      strip.setPixelColor(i, i < metade ? strip.Color(255, 255, 0) : strip.Color(0, 255, 0)); // azul / vermelho
+    }
+  }
+
+  strip.show();
+  alterna = !alterna; // Inverte para o próximo ciclo
+}
