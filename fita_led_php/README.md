@@ -91,7 +91,7 @@ Backend em PHP que:
 ## ✅ Funcionalidades
 
 - Seleção de uma ou mais fitas (Fita 1, Fita 2, Fita 3)
-- 15 efeitos visuais com botão exclusivo para cada um
+- 16 efeitos visuais com botão exclusivo para cada um
 - Botão "Desligar Fita"
 - Controle de brilho (0–255)
 - Controle de velocidade (1–200, onde menor = mais lento)
