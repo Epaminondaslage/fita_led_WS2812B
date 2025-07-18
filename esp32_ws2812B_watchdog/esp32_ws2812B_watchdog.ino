@@ -28,7 +28,7 @@
 
 // Configuração em qual pin esta a fita e numero de leds que ela contém
 #define LED_PIN 5
-#define NUM_LEDS 400
+#define NUM_LEDS 480
 #define LED_PLACA 2  // LED embutido da maioria dos ESP32
 
 /*
