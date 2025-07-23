@@ -67,7 +67,7 @@ void setup() {
   pinMode(LED_PLACA, OUTPUT);
   digitalWrite(LED_PLACA, HIGH); // Apaga LED inicialmente (ESP32 geralmente é ativo em LOW)
 
-  Serial.begin(115200);
+  Serial.begin(19200);
   strip.begin();
   strip.setBrightness(brilho);
   strip.show();
@@ -89,7 +89,6 @@ void setup() {
     Serial.print(".");
     digitalWrite(LED_PLACA, LOW); delay(200);  // Pisca LED
     digitalWrite(LED_PLACA, HIGH); delay(300);
-    // ⚠️ Não chamamos esp_task_wdt_reset() aqui ainda
   }
 
   if (WiFi.status() == WL_CONNECTED) {
@@ -100,14 +99,14 @@ void setup() {
 
     digitalWrite(LED_PLACA, LOW); // LED aceso fixo = conectado
 
-    // 🛠️ Ativa watchdog apenas agora, após conexão
-    esp_err_t result = esp_task_wdt_add(NULL);
+    //🛠️ Ativa watchdog apenas agora, após conexão
+    /* esp_err_t result = esp_task_wdt_add(NULL);
     if (result == ESP_OK) {
       Serial.println("⏱️ Watchdog ativado.");
     } else {
       Serial.print("❌ Erro ao ativar Watchdog: ");
       Serial.println(result);
-    }
+    }*/
 
   } else {
     Serial.println("\n⚠️ Falha ao conectar ao WiFi (timeout). Continuando mesmo assim.");
@@ -223,7 +222,7 @@ void loop() {
     }
   }
   // Alimenta o watchdog
-  esp_task_wdt_reset(); 
+  //esp_task_wdt_reset(); 
 
 }
 
