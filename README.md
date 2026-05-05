@@ -17,7 +17,7 @@ Ao longo deste material, você encontrará explicações sobre os princípios de
 - [IX. Tasmota com fitas de LED endereçáveis](fitas_tasmota.md)
 - [X. Painel de Controle de Fitas de LED em PHP](https://github.com/Epaminondaslage/fita_led_WS2812B/tree/main/fita_led_php))
 - [XI. Comparativo entre fitas de LED Endereçáveis](modelos_fitas_led.md)
-
+- [XII. Acionamento das fitas de LED por MQTT](https://github.com/Epaminondaslage/fita_led_mqtt)
 
 ---
 
