@@ -1,57 +1,179 @@
 <!DOCTYPE html>
+<!--
+  ============================================================
+  fita_led_php / index.html
+  Controle de Fitas de LED
+  ============================================================
+  Descricao:
+    Interface de controle das fitas de LED do sitio Pe de Serra.
+    Permite selecionar fitas, escolher efeitos e ajustar
+    brilho e velocidade.
+
+  Funcionalidades:
+    - Selecao de fitas (Entrada, Esquerda, Direita)
+    - 17 efeitos de iluminacao
+    - Controle de brilho e velocidade via slider
+    - Feedback visual do efeito selecionado
+    - Layout responsivo mobile-first
+    - Topbar padrao do portal
+
+  Autor  : Epaminondas Lage
+  Versao : 2.0.0
+  Data   : 2025-05
+  ============================================================
+-->
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Controle de Fitas e Led's</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fitas de LED</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <div class="logo-container">
-    <img src="logo.jpg" alt="Logo" />
+<!-- ── Topbar fixa ───────────────────────────────────────── -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-brand">
+      <img src="logo.jpg" alt="LED" class="topbar-logo">
+      <div class="topbar-titles">
+        <span class="topbar-title">Fitas de LED</span>
+        <span class="topbar-sub">Controle de iluminação</span>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button onclick="history.back()" class="btn btn-secondary">&#8592; Voltar</button>
+    </div>
+  </div>
+</header>
+
+<!-- ── Conteúdo principal ────────────────────────────────── -->
+<main class="container">
+
+  <!-- Seleção de fitas -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Selecionar Fitas</h2>
+      <span class="card-hint">Selecione uma ou mais fitas</span>
+    </div>
+    <div class="fita-grid">
+      <label class="fita-card">
+        <input type="checkbox" class="fita" value="1">
+        <div class="fita-body">
+          <span class="fita-icon">💡</span>
+          <span class="fita-nome">Entrada</span>
+          <span class="fita-ip">10.0.2.240</span>
+        </div>
+      </label>
+      <label class="fita-card">
+        <input type="checkbox" class="fita" value="2">
+        <div class="fita-body">
+          <span class="fita-icon">💡</span>
+          <span class="fita-nome">Esquerda</span>
+          <span class="fita-ip">10.0.2.241</span>
+        </div>
+      </label>
+      <label class="fita-card">
+        <input type="checkbox" class="fita" value="3">
+        <div class="fita-body">
+          <span class="fita-icon">💡</span>
+          <span class="fita-nome">Direita</span>
+          <span class="fita-ip">10.0.2.242</span>
+        </div>
+      </label>
+    </div>
   </div>
 
-  <div class="header-container">
-    <h1>Controle de Fitas de Led's</h1>
-    <button class="btn-voltar" onclick="history.back()">Voltar</button>
+  <!-- Controles de brilho e velocidade -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Ajustes</h2>
+    </div>
+    <div class="slider-grid">
+      <div class="slider-wrap">
+        <div class="slider-label">
+          <span>&#127774; Brilho</span>
+          <span class="slider-val" id="val-brilho">128</span>
+        </div>
+        <input type="range" id="brilho" min="0" max="255" value="128" class="slider">
+      </div>
+      <div class="slider-wrap">
+        <div class="slider-label">
+          <span>&#9889; Velocidade</span>
+          <span class="slider-val" id="val-velocidade">100</span>
+        </div>
+        <input type="range" id="velocidade" min="1" max="200" value="100" class="slider">
+      </div>
+    </div>
   </div>
 
-  <div class="fita-selector">
-    <label><input type="checkbox" class="fita" value="1" /> Fita Entrada</label>
-    <label><input type="checkbox" class="fita" value="2" /> Fita Esquerda</label>
-    <label><input type="checkbox" class="fita" value="3" /> Fita Direita</label>
+  <!-- Efeitos -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Efeitos</h2>
+      <span class="card-hint" id="efeito-ativo">Nenhum selecionado</span>
+    </div>
+    <div class="efeitos-grid">
+      <button class="btn-efeito" data-efeito="0">&#127881; Confete</button>
+      <button class="btn-efeito" data-efeito="1">&#9732; Cometa</button>
+      <button class="btn-efeito" data-efeito="2">&#9889; Piscar</button>
+      <button class="btn-efeito" data-efeito="3">&#127752; Arco-Íris</button>
+      <button class="btn-efeito" data-efeito="4">&#10052; Branco Frio</button>
+      <button class="btn-efeito" data-efeito="5">&#127774; Branco Quente</button>
+      <button class="btn-efeito" data-efeito="6">&#128309; Azul</button>
+      <button class="btn-efeito" data-efeito="7">&#128994; Verde</button>
+      <button class="btn-efeito" data-efeito="8">&#128308; Vermelho</button>
+      <button class="btn-efeito" data-efeito="9">&#127744; Arco-Íris Rot.</button>
+      <button class="btn-efeito" data-efeito="10">&#9654; Progressivo</button>
+      <button class="btn-efeito" data-efeito="11">&#9654;&#9654; Sequencial</button>
+      <button class="btn-efeito" data-efeito="12">&#10022; Estrelas</button>
+      <button class="btn-efeito" data-efeito="13">&#128999; Polícia</button>
+      <button class="btn-efeito" data-efeito="14">&#128165; Explosão</button>
+      <button class="btn-efeito" data-efeito="15">&#127475;&#127479; Brasil</button>
+      <button class="btn-efeito btn-desligar" data-efeito="16">&#9940; Desligar</button>
+    </div>
   </div>
 
-  <div class="efeitos">
-    <button data-efeito="0">Confete</button>
-    <button data-efeito="1">Cometa</button>
-    <button data-efeito="2">Piscar</button>
-    <button data-efeito="3">Arco-Íris</button>
-    <button data-efeito="4">Branco Frio</button>
-    <button data-efeito="5">Branco Quente</button>
-    <button data-efeito="6">Azul</button>
-    <button data-efeito="7">Verde</button>
-    <button data-efeito="8">Vermelho</button>
-    <button data-efeito="9">Arco-Íris Rotativo</button>
-    <button data-efeito="10">Progressivo</button>
-    <button data-efeito="11">Ligar Sequencial</button>
-    <button data-efeito="12">Chuva de Estrelas</button>
-    <button data-efeito="13">Polícia</button>
-    <button data-efeito="14">Explosão Central</button>
-    <button data-efeito="15">Brasil</button>
-    <button data-efeito="16">Desligar</button>
-  </div>
+  <!-- Toast de status -->
+  <div class="toast" id="toast"></div>
 
-  <div class="controles">
-    <label>Brilho:
-      <input type="range" id="brilho" min="0" max="255" />
-    </label>
-    <label>Velocidade:
-      <input type="range" id="velocidade" min="1" max="200" />
-    </label>
-  </div>
-  <script src="js/script.js?v=1.0"></script>
-  
+</main>
+
+<script src="js/script.js?v=2.0"></script>
+<!-- ── Bottom Nav ────────────────────────────────────────── -->
+<nav class="bottom-nav">
+  <a href="http://10.0.0.5/index.php" class="nav-item">
+    <div class="nav-icon-img-wrap">
+      <img src="../img/home.jpg" class="nav-icon-img" alt="Início">
+    </div>
+    <span class="nav-label">Início</span>
+  </a>
+  <a href="http://10.0.0.5/gerencia.php" class="nav-item">
+    <div class="nav-icon-img-wrap">
+      <img src="../img/adm_rede.jpg" class="nav-icon-img" alt="Rede">
+    </div>
+    <span class="nav-label">Rede</span>
+  </a>
+  <a href="http://10.0.0.139:8123" class="nav-item">
+    <div class="nav-icon-img-wrap">
+      <img src="../img/Home_Assistant_Logo.png" class="nav-icon-img" alt="Automação">
+    </div>
+    <span class="nav-label">Automação</span>
+  </a>
+  <a href="http://10.0.0.5/ilumina.php" class="nav-item active">
+    <div class="nav-icon-img-wrap active-wrap">
+      <img src="../img/iluminacao.jpg" class="nav-icon-img" alt="Luzes">
+    </div>
+    <span class="nav-label">Luzes</span>
+  </a>
+  <a href="http://10.0.2.148/docai" class="nav-item">
+    <div class="nav-icon-img-wrap">
+      <img src="../img/livros_logo.png" class="nav-icon-img" alt="Biblioteca">
+    </div>
+    <span class="nav-label">Biblioteca</span>
+  </a>
+</nav>
+
+
 </body>
 </html>
