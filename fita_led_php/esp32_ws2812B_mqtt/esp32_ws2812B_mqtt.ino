@@ -2,11 +2,16 @@
   ================================================================================
   Projeto : Controle de Fita de LED WS2812B com ESP32 + MQTT
   Autor   : Epaminondas de Souza Lage
-  Versão  : 2.3.0
+  Versão  : 2.3.1
 
   Descrição:
     Controle de fita WS2812B via MQTT com servidor web de diagnóstico.
     O mesmo firmware roda em todos os ESP32.
+
+  Correção v2.3.1:
+    - Inicialização estática da NeoPixel (sem new/delete)
+    - updateLength() e setPin() para reconfigurar sem alocar memoria
+    - Mais estável em todos os modelos de ESP32
 
   Novidades v2.3.0:
     - Dual WiFi: tenta rede primária, se falhar usa rede secundária
@@ -14,7 +19,6 @@
     - Serial em 19200 baud
     - Padrão de 480 LEDs
     - Log de mensagens MQTT recebidas e enviadas
-    - Exibe efeito em andamento, MAC, IP, uptime, status MQTT
 
   Arquitetura MQTT:
     fita-led/discovery/{MAC}    ← ESP32 publica ao conectar (retain=true)
@@ -27,7 +31,6 @@
     - Adafruit NeoPixel
     - PubSubClient (Nick O'Leary)
     - ArduinoJson
-    - WebServer (incluída no ESP32 Arduino Core)
 
   ================================================================================
 */
@@ -41,15 +44,16 @@
 // ── Valores padrão ─────────────────────────────────────────
 #define LED_PIN_DEFAULT   5
 #define NUM_LEDS_DEFAULT  480
+#define MAX_LEDS          2000   // limite máximo para alocação estática
 
-// ── Dual WiFi — tenta primária, se falhar usa secundária ───
+// ── Dual WiFi ──────────────────────────────────────────────
 const char* WIFI_SSID_1  = "PLT-DIR";
 const char* WIFI_PASS_1  = "epaminondas";
-const char* WIFI_SSID_2  = "PLT-DIR-5G";       // rede secundária
-const char* WIFI_PASS_2  = "epaminondas";       // senha secundária
-const int   WIFI_TIMEOUT = 15;                  // segundos por tentativa
+const char* WIFI_SSID_2  = "PLT-DIR-5G";
+const char* WIFI_PASS_2  = "epaminondas";
+const int   WIFI_TIMEOUT = 15;
 
-// ── Configuração MQTT ──────────────────────────────────────
+// ── MQTT ───────────────────────────────────────────────────
 const char* MQTT_HOST = "10.0.0.141";
 const int   MQTT_PORT = 1883;
 const char* MQTT_USER = "mqtt";
@@ -66,12 +70,14 @@ char TOPIC_CONFIG[60];
 int  ledPin         = LED_PIN_DEFAULT;
 int  numLeds        = NUM_LEDS_DEFAULT;
 bool configRecebida = false;
+bool fitaIniciada   = false;
 
 // ── Objetos globais ────────────────────────────────────────
-Adafruit_NeoPixel* strip = nullptr;
-WiFiClient         wifiClient;
-PubSubClient       mqtt(wifiClient);
-WebServer          server(80);
+// Inicialização ESTÁTICA — evita problemas com alocação dinâmica
+Adafruit_NeoPixel strip(NUM_LEDS_DEFAULT, LED_PIN_DEFAULT, NEO_GRB + NEO_KHZ800);
+WiFiClient        wifiClient;
+PubSubClient      mqtt(wifiClient);
+WebServer         server(80);
 
 // ── Estado da fita ─────────────────────────────────────────
 int           efeitoAtual    = 16;
@@ -86,24 +92,22 @@ float         fase           = 0.0;
 int           passo          = 0;
 
 // ── Identificação ──────────────────────────────────────────
-String macStr      = "";
-String nomeFita    = "";
+String macStr        = "";
+String nomeFita      = "";
 String redeConectada = "";
+String statusConexao = "Inicializando...";
 unsigned long bootTime = 0;
 
-// ── Log de mensagens MQTT (últimas 10) ────────────────────
+// ── Log MQTT ───────────────────────────────────────────────
 #define LOG_SIZE 10
 struct LogEntry {
-    String direcao;  // "RX" ou "TX"
+    String direcao;
     String topico;
     String payload;
     unsigned long ts;
 };
 LogEntry mqttLog[LOG_SIZE];
 int logIndex = 0;
-
-// ── Status de conexão para a página web ───────────────────
-String statusConexao = "Inicializando...";
 
 // ── Nomes dos efeitos ──────────────────────────────────────
 const char* NOMES_EFEITOS[] = {
@@ -146,18 +150,29 @@ void onMensagemMQTT(char* topic, byte* payload, unsigned int length) {
     adicionarLog("RX", topicStr, String(msg));
     Serial.println("[MQTT RX] " + topicStr + " : " + String(msg));
 
-    // ── Config de hardware ─────────────────────────────────
+    // Config de hardware
     if (topicStr == String(TOPIC_CONFIG)) {
         StaticJsonDocument<128> doc;
         if (deserializeJson(doc, msg)) return;
-        if (doc.containsKey("num_leds")) numLeds = doc["num_leds"].as<int>();
+        if (doc.containsKey("num_leds")) numLeds = constrain(doc["num_leds"].as<int>(), 1, MAX_LEDS);
         if (doc.containsKey("led_pin"))  ledPin  = doc["led_pin"].as<int>();
         configRecebida = true;
         Serial.printf("[CONFIG] num_leds=%d led_pin=%d\n", numLeds, ledPin);
+
+        // Reconfigura a fita se já iniciada
+        if (fitaIniciada) {
+            strip.updateLength(numLeds);
+            strip.setPin(ledPin);
+            strip.begin();
+            strip.clear();
+            strip.show();
+            Serial.printf("[FITA] Reconfigurada: %d LEDs pino %d\n", numLeds, ledPin);
+            publicarDiscovery();
+        }
         return;
     }
 
-    // ── Nome personalizado ─────────────────────────────────
+    // Nome personalizado
     if (topicStr == String(TOPIC_NOME)) {
         nomeFita = String(msg);
         Serial.println("[NOME] " + nomeFita);
@@ -165,9 +180,9 @@ void onMensagemMQTT(char* topic, byte* payload, unsigned int length) {
         return;
     }
 
-    // ── Comando de efeito ──────────────────────────────────
+    // Comando de efeito
     if (topicStr == String(TOPIC_CMD)) {
-        if (!strip) return;
+        if (!fitaIniciada) return;
         StaticJsonDocument<200> doc;
         if (deserializeJson(doc, msg)) return;
 
@@ -177,7 +192,7 @@ void onMensagemMQTT(char* topic, byte* payload, unsigned int length) {
         }
         if (doc.containsKey("brilho")) {
             brilho = constrain(doc["brilho"].as<int>(), 0, 255);
-            strip->setBrightness(brilho);
+            strip.setBrightness(brilho);
         }
         if (doc.containsKey("vel")) {
             velocidade = 201 - constrain(doc["vel"].as<int>(), 1, 200);
@@ -187,270 +202,208 @@ void onMensagemMQTT(char* topic, byte* payload, unsigned int length) {
 }
 
 // ══════════════════════════════════════════════════════════
-// PÁGINA WEB — HTML principal
+// PÁGINA WEB — DIAGNÓSTICO
 // ══════════════════════════════════════════════════════════
 void handleRoot() {
-    String html = R"rawhtml(
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="refresh" content="5">
-<title>Fita LED — Diagnostico</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:system-ui,sans-serif;background:#f5f6f8;color:#1a1d23;font-size:14px}
-  .topbar{background:#fff;border-bottom:1px solid #e2e5ea;padding:12px 20px;
-          display:flex;align-items:center;justify-content:space-between;
-          box-shadow:0 1px 3px rgba(0,0,0,.08)}
-  .topbar-title{font-weight:700;font-size:16px}
-  .topbar-sub{font-size:11px;color:#6b7280}
-  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
-  .dot-green{background:#22c55e;animation:pulse 2s infinite}
-  .dot-red{background:#ef4444}
-  .dot-yellow{background:#f59e0b}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-  .container{max-width:800px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-  .card{background:#fff;border:1px solid #e2e5ea;border-radius:8px;overflow:hidden;
-        box-shadow:0 1px 3px rgba(0,0,0,.06)}
-  .card-header{background:#f5f6f8;padding:10px 16px;border-bottom:1px solid #e2e5ea;
-               font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#6b7280}
-  .card-body{padding:14px 16px}
-  .row{display:flex;justify-content:space-between;align-items:center;
-       padding:6px 0;border-bottom:1px solid #f0f1f3}
-  .row:last-child{border-bottom:none}
-  .row-label{color:#6b7280;font-size:12px}
-  .row-val{font-weight:600;font-family:monospace;font-size:13px}
-  .badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600}
-  .badge-on{background:#dcfce7;color:#15803d}
-  .badge-off{background:#fee2e2;color:#b91c1c}
-  .badge-yellow{background:#fef9c3;color:#854d0e}
-  .log-table{width:100%;border-collapse:collapse;font-size:11px}
-  .log-table th{background:#f5f6f8;padding:6px 10px;text-align:left;color:#6b7280;
-                font-size:10px;text-transform:uppercase;letter-spacing:.05em}
-  .log-table td{padding:5px 10px;border-bottom:1px solid #f0f1f3;font-family:monospace}
-  .log-table tr:last-child td{border-bottom:none}
-  .rx{color:#2563eb}.tx{color:#16a34a}
-  .efeito-badge{background:#e0f2fe;color:#0369a1;padding:4px 12px;
-                border-radius:20px;font-weight:700;font-size:14px}
-  .progress-bar{height:6px;background:#e2e5ea;border-radius:3px;overflow:hidden;margin-top:4px}
-  .progress-fill{height:100%;background:#22c55e;border-radius:3px;transition:width .3s}
-  .status-conn{padding:8px 12px;border-radius:6px;font-size:12px;margin-bottom:8px}
-  .conn-ok{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
-  .conn-err{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}
-  .conn-warn{background:#fffbeb;color:#854d0e;border:1px solid #fde68a}
-  .refresh-note{text-align:center;font-size:11px;color:#9ca3af;margin-top:4px}
-</style>
-</head>
-<body>
-<div class="topbar">
-  <div>
-    <div class="topbar-title">)rawhtml";
+    String html = "<!DOCTYPE html><html lang='pt-BR'><head>";
+    html += "<meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'>";
+    html += "<meta http-equiv='refresh' content='5'>";
+    html += "<title>" + nomeFita + " — Diagnostico</title>";
+    html += "<style>";
+    html += "*{box-sizing:border-box;margin:0;padding:0}";
+    html += "body{font-family:system-ui,sans-serif;background:#f5f6f8;color:#1a1d23;font-size:14px}";
+    html += ".topbar{background:#fff;border-bottom:1px solid #e2e5ea;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 3px rgba(0,0,0,.08)}";
+    html += ".topbar-title{font-weight:700;font-size:15px}";
+    html += ".topbar-sub{font-size:11px;color:#6b7280}";
+    html += ".dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}";
+    html += ".green{background:#22c55e;animation:pulse 2s infinite}.red{background:#ef4444}.yellow{background:#f59e0b}";
+    html += "@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}";
+    html += ".container{max-width:700px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:10px}";
+    html += ".card{background:#fff;border:1px solid #e2e5ea;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}";
+    html += ".card-header{background:#f5f6f8;padding:8px 14px;border-bottom:1px solid #e2e5ea;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b7280}";
+    html += ".card-body{padding:12px 14px}";
+    html += ".row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f0f1f3}";
+    html += ".row:last-child{border-bottom:none}";
+    html += ".lbl{color:#6b7280;font-size:12px}.val{font-weight:600;font-family:monospace;font-size:12px}";
+    html += ".badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}";
+    html += ".b-green{background:#dcfce7;color:#15803d}.b-red{background:#fee2e2;color:#b91c1c}.b-yellow{background:#fef9c3;color:#854d0e}";
+    html += ".efeito{text-align:center;padding:16px;font-size:18px;font-weight:700;color:#0369a1;background:#e0f2fe;border-radius:6px;margin-bottom:10px}";
+    html += ".bar-bg{height:6px;background:#e2e5ea;border-radius:3px;overflow:hidden;margin-top:3px}";
+    html += ".bar-fill{height:100%;background:#22c55e;border-radius:3px}";
+    html += ".status{padding:8px 12px;border-radius:6px;font-size:12px;margin-bottom:8px}";
+    html += ".s-ok{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}";
+    html += ".s-warn{background:#fffbeb;color:#854d0e;border:1px solid #fde68a}";
+    html += ".s-err{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}";
+    html += ".log-t{width:100%;border-collapse:collapse;font-size:11px}";
+    html += ".log-t th{background:#f5f6f8;padding:5px 8px;text-align:left;color:#6b7280;font-size:10px;text-transform:uppercase}";
+    html += ".log-t td{padding:4px 8px;border-bottom:1px solid #f0f1f3;font-family:monospace}";
+    html += ".log-t tr:last-child td{border:none}";
+    html += ".rx{color:#2563eb;font-weight:700}.tx{color:#16a34a;font-weight:700}";
+    html += ".note{text-align:center;font-size:10px;color:#9ca3af;margin-top:4px}";
+    html += "</style></head><body>";
 
-    html += nomeFita;
-    html += R"rawhtml( — Diagnóstico</div>
-    <div class="topbar-sub">Fita LED WS2812B + MQTT v2.3.0</div>
-  </div>
-  <div>)rawhtml";
-
+    // Topbar
+    html += "<div class='topbar'><div>";
+    html += "<div class='topbar-title'>" + nomeFita + "</div>";
+    html += "<div class='topbar-sub'>WS2812B + MQTT v2.3.1 | MAC: " + macStr + "</div>";
+    html += "</div><div>";
     if (mqtt.connected())
-        html += "<span class='dot dot-green'></span><span style='font-size:12px;color:#15803d'>MQTT OK</span>";
+        html += "<span class='dot green'></span><span style='font-size:12px;color:#15803d'>MQTT OK</span>";
     else
-        html += "<span class='dot dot-red'></span><span style='font-size:12px;color:#b91c1c'>MQTT OFF</span>";
+        html += "<span class='dot red'></span><span style='font-size:12px;color:#b91c1c'>MQTT OFF</span>";
+    html += "</div></div>";
 
-    html += R"rawhtml(
-  </div>
-</div>
-<div class="container">
-)rawhtml";
+    html += "<div class='container'>";
 
-    // Status de conexão
-    html += "<div class='status-conn ";
-    if (WiFi.status() == WL_CONNECTED && mqtt.connected()) html += "conn-ok'>";
-    else if (WiFi.status() == WL_CONNECTED)                html += "conn-warn'>";
-    else                                                    html += "conn-err'>";
-    html += statusConexao + "</div>";
+    // Status de conexao
+    String sClass = (WiFi.status() == WL_CONNECTED && mqtt.connected()) ? "s-ok" :
+                    (WiFi.status() == WL_CONNECTED) ? "s-warn" : "s-err";
+    html += "<div class='status " + sClass + "'>" + statusConexao + "</div>";
 
-    // Card — Efeito atual
-    String nomeEfeito = (efeitoAtual >= 0 && efeitoAtual <= 16) ? NOMES_EFEITOS[efeitoAtual] : "Desconhecido";
-    html += "<div class='card'>";
-    html += "<div class='card-header'>Efeito em Andamento</div>";
-    html += "<div class='card-body' style='text-align:center;padding:20px'>";
-    html += "<span class='efeito-badge'>" + nomeEfeito + "</span>";
-    html += "<div style='margin-top:14px'>";
-    html += "<div class='row-label'>Brilho</div>";
-    html += "<div class='progress-bar'><div class='progress-fill' style='width:" + String(brilho * 100 / 255) + "%'></div></div>";
-    html += "<div style='font-size:11px;color:#6b7280;margin-top:3px'>" + String(brilho) + " / 255</div>";
-    html += "</div></div></div>";
+    // Efeito atual
+    String nomeEfeito = (efeitoAtual >= 0 && efeitoAtual <= 16) ? NOMES_EFEITOS[efeitoAtual] : "?";
+    html += "<div class='card'><div class='card-header'>Efeito em Andamento</div><div class='card-body'>";
+    html += "<div class='efeito'>" + nomeEfeito + "</div>";
+    html += "<div class='lbl'>Brilho: " + String(brilho) + " / 255</div>";
+    html += "<div class='bar-bg'><div class='bar-fill' style='width:" + String(brilho * 100 / 255) + "%'></div></div>";
+    html += "</div></div>";
 
-    // Card — Informações do dispositivo
+    // Dispositivo
     unsigned long upSec = (millis() - bootTime) / 1000;
-    int upH = upSec / 3600, upM = (upSec % 3600) / 60, upS = upSec % 60;
     char uptime[20];
-    snprintf(uptime, sizeof(uptime), "%02d:%02d:%02d", upH, upM, upS);
+    snprintf(uptime, sizeof(uptime), "%02d:%02d:%02d", (int)(upSec/3600), (int)((upSec%3600)/60), (int)(upSec%60));
 
     html += "<div class='card'><div class='card-header'>Dispositivo</div><div class='card-body'>";
-    html += "<div class='row'><span class='row-label'>MAC</span><span class='row-val'>" + macStr + "</span></div>";
-    html += "<div class='row'><span class='row-label'>IP</span><span class='row-val'>" + WiFi.localIP().toString() + "</span></div>";
-    html += "<div class='row'><span class='row-label'>Rede WiFi</span><span class='row-val'>" + redeConectada + "</span></div>";
-    html += "<div class='row'><span class='row-label'>RSSI</span><span class='row-val'>" + String(WiFi.RSSI()) + " dBm</span></div>";
-    html += "<div class='row'><span class='row-label'>Uptime</span><span class='row-val'>" + String(uptime) + "</span></div>";
-    html += "<div class='row'><span class='row-label'>Firmware</span><span class='row-val'>v2.3.0</span></div>";
+    html += "<div class='row'><span class='lbl'>MAC</span><span class='val'>" + macStr + "</span></div>";
+    html += "<div class='row'><span class='lbl'>IP</span><span class='val'>" + WiFi.localIP().toString() + "</span></div>";
+    html += "<div class='row'><span class='lbl'>Rede WiFi</span><span class='val'>" + redeConectada + "</span></div>";
+    html += "<div class='row'><span class='lbl'>RSSI</span><span class='val'>" + String(WiFi.RSSI()) + " dBm</span></div>";
+    html += "<div class='row'><span class='lbl'>Uptime</span><span class='val'>" + String(uptime) + "</span></div>";
     html += "</div></div>";
 
-    // Card — Configuração da fita
-    html += "<div class='card'><div class='card-header'>Configuração da Fita</div><div class='card-body'>";
-    html += "<div class='row'><span class='row-label'>Num. LEDs</span><span class='row-val'>" + String(numLeds) + "</span></div>";
-    html += "<div class='row'><span class='row-label'>Pino de dados</span><span class='row-val'>" + String(ledPin) + "</span></div>";
-    html += "<div class='row'><span class='row-label'>Brilho</span><span class='row-val'>" + String(brilho) + " / 255</span></div>";
-    html += "<div class='row'><span class='row-label'>Velocidade (intervalo)</span><span class='row-val'>" + String(velocidade) + " ms</span></div>";
-    html += "<div class='row'><span class='row-label'>Config via broker</span>";
-    html += configRecebida ? "<span class='badge badge-on'>Sim</span>" : "<span class='badge badge-yellow'>Padrão</span>";
+    // Config da fita
+    html += "<div class='card'><div class='card-header'>Configuracao da Fita</div><div class='card-body'>";
+    html += "<div class='row'><span class='lbl'>LEDs</span><span class='val'>" + String(numLeds) + "</span></div>";
+    html += "<div class='row'><span class='lbl'>Pino</span><span class='val'>" + String(ledPin) + "</span></div>";
+    html += "<div class='row'><span class='lbl'>Velocidade</span><span class='val'>" + String(velocidade) + " ms</span></div>";
+    html += "<div class='row'><span class='lbl'>Config via broker</span>";
+    html += configRecebida ? "<span class='badge b-green'>Sim</span>" : "<span class='badge b-yellow'>Padrao</span>";
     html += "</div></div></div>";
 
-    // Card — MQTT
+    // MQTT
     html += "<div class='card'><div class='card-header'>MQTT</div><div class='card-body'>";
-    html += "<div class='row'><span class='row-label'>Broker</span><span class='row-val'>" + String(MQTT_HOST) + ":" + String(MQTT_PORT) + "</span></div>";
-    html += "<div class='row'><span class='row-label'>Status</span>";
-    html += mqtt.connected() ? "<span class='badge badge-on'>Conectado</span>" : "<span class='badge badge-off'>Desconectado</span>";
+    html += "<div class='row'><span class='lbl'>Broker</span><span class='val'>" + String(MQTT_HOST) + ":" + String(MQTT_PORT) + "</span></div>";
+    html += "<div class='row'><span class='lbl'>Status</span>";
+    html += mqtt.connected() ? "<span class='badge b-green'>Conectado</span>" : "<span class='badge b-red'>Desconectado</span>";
     html += "</div>";
-    html += "<div class='row'><span class='row-label'>Discovery</span><span class='row-val' style='font-size:10px'>" + String(TOPIC_DISCOVERY) + "</span></div>";
-    html += "<div class='row'><span class='row-label'>CMD</span><span class='row-val' style='font-size:10px'>" + String(TOPIC_CMD) + "</span></div>";
+    html += "<div class='row'><span class='lbl'>CMD</span><span class='val' style='font-size:10px'>" + String(TOPIC_CMD) + "</span></div>";
     html += "</div></div>";
 
-    // Card — Log MQTT
-    html += "<div class='card'><div class='card-header'>Log MQTT (últimas mensagens)</div><div class='card-body' style='padding:0'>";
-    html += "<table class='log-table'><thead><tr><th>Dir</th><th>ms</th><th>Tópico</th><th>Payload</th></tr></thead><tbody>";
-
+    // Log MQTT
+    html += "<div class='card'><div class='card-header'>Log MQTT</div>";
+    html += "<table class='log-t'><thead><tr><th>Dir</th><th>t(s)</th><th>Topico</th><th>Payload</th></tr></thead><tbody>";
     int total = (logIndex < LOG_SIZE) ? logIndex : LOG_SIZE;
     for (int i = total - 1; i >= 0; i--) {
-        int idx = (logIndex - 1 - i + LOG_SIZE * 10) % LOG_SIZE;
-        html += "<tr>";
-        html += "<td class='" + String(mqttLog[idx].direcao == "RX" ? "rx" : "tx") + "'>" + mqttLog[idx].direcao + "</td>";
-        html += "<td>" + String(mqttLog[idx].ts / 1000) + "s</td>";
-        // Mostra só a última parte do tópico
+        int idx = (logIndex - 1 - i + LOG_SIZE * 100) % LOG_SIZE;
         String t = mqttLog[idx].topico;
         int sl = t.lastIndexOf('/');
-        html += "<td>" + (sl >= 0 ? t.substring(sl+1) : t) + "</td>";
-        html += "<td>" + mqttLog[idx].payload.substring(0, 60) + "</td>";
-        html += "</tr>";
+        String subtopico = (sl >= 0) ? t.substring(sl+1) : t;
+        html += "<tr><td class='" + String(mqttLog[idx].direcao == "RX" ? "rx" : "tx") + "'>" + mqttLog[idx].direcao + "</td>";
+        html += "<td>" + String(mqttLog[idx].ts / 1000) + "</td>";
+        html += "<td>" + subtopico + "</td>";
+        html += "<td>" + mqttLog[idx].payload.substring(0, 50) + "</td></tr>";
     }
-    if (total == 0) html += "<tr><td colspan='4' style='text-align:center;color:#9ca3af;padding:12px'>Nenhuma mensagem ainda</td></tr>";
-    html += "</tbody></table></div></div>";
+    if (total == 0) html += "<tr><td colspan='4' style='text-align:center;color:#9ca3af;padding:10px'>Sem mensagens</td></tr>";
+    html += "</tbody></table></div>";
 
-    html += "<p class='refresh-note'>Atualização automática a cada 5 segundos</p>";
+    html += "<p class='note'>Atualiza a cada 5s | <a href='/status'>JSON</a></p>";
     html += "</div></body></html>";
 
     server.send(200, "text/html; charset=utf-8", html);
 }
 
-// ── Endpoint JSON para dados em tempo real ─────────────────
 void handleStatus() {
     StaticJsonDocument<512> doc;
-    doc["mac"]          = macStr;
-    doc["ip"]           = WiFi.localIP().toString();
-    doc["nome"]         = nomeFita;
-    doc["rede"]         = redeConectada;
-    doc["rssi"]         = WiFi.RSSI();
-    doc["mqtt"]         = mqtt.connected();
-    doc["efeito"]       = efeitoAtual;
-    doc["efeito_nome"]  = NOMES_EFEITOS[efeitoAtual];
-    doc["brilho"]       = brilho;
-    doc["velocidade"]   = velocidade;
-    doc["num_leds"]     = numLeds;
-    doc["led_pin"]      = ledPin;
-    doc["config_broker"]= configRecebida;
-    doc["uptime_ms"]    = millis() - bootTime;
-    doc["firmware"]     = "v2.3.0";
-
+    doc["mac"]           = macStr;
+    doc["ip"]            = WiFi.localIP().toString();
+    doc["nome"]          = nomeFita;
+    doc["rede"]          = redeConectada;
+    doc["rssi"]          = WiFi.RSSI();
+    doc["mqtt"]          = mqtt.connected();
+    doc["efeito"]        = efeitoAtual;
+    doc["efeito_nome"]   = NOMES_EFEITOS[efeitoAtual];
+    doc["brilho"]        = brilho;
+    doc["velocidade"]    = velocidade;
+    doc["num_leds"]      = numLeds;
+    doc["led_pin"]       = ledPin;
+    doc["config_broker"] = configRecebida;
+    doc["uptime_ms"]     = millis() - bootTime;
+    doc["firmware"]      = "v2.3.1";
     String json;
     serializeJson(doc, json);
     server.send(200, "application/json", json);
 }
 
-// ══════════════════════════════════════════════════════════
-// SETUP WEB SERVER
-// ══════════════════════════════════════════════════════════
 void setupWebServer() {
     server.on("/",       handleRoot);
     server.on("/status", handleStatus);
     server.begin();
-    Serial.println("[WEB] Servidor HTTP na porta 80");
-    Serial.println("[WEB] http://" + WiFi.localIP().toString() + "/");
+    Serial.println("[WEB] http://" + WiFi.localIP().toString());
 }
 
 // ══════════════════════════════════════════════════════════
-// CONEXÃO DUAL WiFi
+// DUAL WiFi
 // ══════════════════════════════════════════════════════════
 void conectarWiFi() {
-    // Tenta rede primária
-    Serial.print("[WiFi] Tentando rede primaria: ");
-    Serial.println(WIFI_SSID_1);
-    statusConexao = "Conectando ao WiFi primário: " + String(WIFI_SSID_1) + "...";
-
+    Serial.println("[WiFi] Tentando: " + String(WIFI_SSID_1));
+    statusConexao = "Conectando ao WiFi: " + String(WIFI_SSID_1) + "...";
     WiFi.begin(WIFI_SSID_1, WIFI_PASS_1);
     int t = 0;
-    while (WiFi.status() != WL_CONNECTED && t < WIFI_TIMEOUT) {
-        delay(1000);
-        Serial.print(".");
-        t++;
-    }
+    while (WiFi.status() != WL_CONNECTED && t < WIFI_TIMEOUT) { delay(1000); Serial.print("."); t++; }
 
     if (WiFi.status() == WL_CONNECTED) {
         redeConectada = String(WIFI_SSID_1);
-        statusConexao = "✓ Conectado ao WiFi: " + redeConectada + " | IP: " + WiFi.localIP().toString();
-        Serial.println("\n[WiFi] OK! Rede: " + redeConectada + " | IP: " + WiFi.localIP().toString());
+        statusConexao = "WiFi OK: " + redeConectada + " | IP: " + WiFi.localIP().toString();
+        Serial.println("\n[WiFi] OK! " + redeConectada + " | " + WiFi.localIP().toString());
         return;
     }
 
-    // Tenta rede secundária
-    Serial.println("\n[WiFi] Primaria falhou. Tentando secundaria: " + String(WIFI_SSID_2));
-    statusConexao = "WiFi primário falhou. Tentando: " + String(WIFI_SSID_2) + "...";
-
+    Serial.println("\n[WiFi] Falhou. Tentando: " + String(WIFI_SSID_2));
+    statusConexao = "WiFi primario falhou. Tentando: " + String(WIFI_SSID_2) + "...";
     WiFi.begin(WIFI_SSID_2, WIFI_PASS_2);
     t = 0;
-    while (WiFi.status() != WL_CONNECTED && t < WIFI_TIMEOUT) {
-        delay(1000);
-        Serial.print(".");
-        t++;
-    }
+    while (WiFi.status() != WL_CONNECTED && t < WIFI_TIMEOUT) { delay(1000); Serial.print("."); t++; }
 
     if (WiFi.status() == WL_CONNECTED) {
         redeConectada = String(WIFI_SSID_2);
-        statusConexao = "✓ Conectado ao WiFi secundário: " + redeConectada + " | IP: " + WiFi.localIP().toString();
-        Serial.println("\n[WiFi] OK! Rede: " + redeConectada + " | IP: " + WiFi.localIP().toString());
+        statusConexao = "WiFi OK (secundario): " + redeConectada + " | IP: " + WiFi.localIP().toString();
+        Serial.println("\n[WiFi] OK! " + redeConectada + " | " + WiFi.localIP().toString());
         return;
     }
 
-    // Ambas falharam
-    statusConexao = "✗ Falha em ambas as redes WiFi. Reiniciando...";
-    Serial.println("\n[WiFi] FALHOU em ambas as redes. Reiniciando...");
+    Serial.println("\n[WiFi] FALHOU em ambas. Reiniciando...");
+    statusConexao = "Falha em ambas as redes. Reiniciando...";
     delay(3000);
     ESP.restart();
 }
 
 // ══════════════════════════════════════════════════════════
-// CONEXÃO MQTT
+// MQTT
 // ══════════════════════════════════════════════════════════
 void conectarMQTT() {
     String clientId = "fita-led-" + macStr;
-    Serial.print("[MQTT] Conectando...");
-    statusConexao = "Conectando ao broker MQTT: " + String(MQTT_HOST) + "...";
-
     while (!mqtt.connected()) {
+        Serial.print("[MQTT] Conectando...");
         if (mqtt.connect(clientId.c_str(), MQTT_USER, MQTT_PASS)) {
             Serial.println(" OK!");
-            statusConexao = "✓ WiFi: " + redeConectada + " | MQTT: " + String(MQTT_HOST) + " | IP: " + WiFi.localIP().toString();
             mqtt.subscribe(TOPIC_CMD);
             mqtt.subscribe(TOPIC_NOME);
             mqtt.subscribe(TOPIC_CONFIG);
             publicarDiscovery();
             publicarStatus();
+            statusConexao = "OK | WiFi: " + redeConectada + " | MQTT: " + String(MQTT_HOST) + " | " + String(numLeds) + " LEDs";
         } else {
-            Serial.print(" Falhou (rc=");
-            Serial.print(mqtt.state());
-            Serial.println("). Aguardando 5s...");
+            Serial.println(" Falhou. Aguardando 5s...");
             delay(5000);
         }
     }
@@ -466,7 +419,6 @@ void publicarDiscovery() {
     doc["nome"]     = nomeFita;
     doc["num_leds"] = numLeds;
     doc["led_pin"]  = ledPin;
-
     char payload[256];
     serializeJson(doc, payload);
     mqtt.publish(TOPIC_DISCOVERY, payload, true);
@@ -476,12 +428,11 @@ void publicarDiscovery() {
 
 void publicarStatus() {
     StaticJsonDocument<128> doc;
-    doc["efeito"]    = efeitoAtual;
-    doc["brilho"]    = brilho;
-    doc["vel"]       = 201 - velocidade;
-    doc["ip"]        = WiFi.localIP().toString();
-    doc["num_leds"]  = numLeds;
-
+    doc["efeito"]   = efeitoAtual;
+    doc["brilho"]   = brilho;
+    doc["vel"]      = 201 - velocidade;
+    doc["ip"]       = WiFi.localIP().toString();
+    doc["num_leds"] = numLeds;
     char payload[128];
     serializeJson(doc, payload);
     mqtt.publish(TOPIC_STATUS, payload, true);
@@ -494,7 +445,7 @@ void publicarStatus() {
 void setup() {
     Serial.begin(19200);
     delay(500);
-    Serial.println("\n=== Fita LED WS2812B + MQTT v2.3.0 ===");
+    Serial.println("\n=== Fita LED WS2812B + MQTT v2.3.1 ===");
     bootTime = millis();
 
     conectarWiFi();
@@ -513,14 +464,13 @@ void setup() {
 
     Serial.println("[INFO] MAC    : " + macStr);
     Serial.println("[INFO] IP     : " + WiFi.localIP().toString());
-    Serial.println("[INFO] Rede   : " + redeConectada);
     Serial.println("[INFO] CONFIG : " + String(TOPIC_CONFIG));
 
     mqtt.setServer(MQTT_HOST, MQTT_PORT);
     mqtt.setCallback(onMensagemMQTT);
     mqtt.setBufferSize(512);
 
-    // Conecta MQTT e aguarda config
+    // Conecta MQTT e assina config antes de inicializar a fita
     String clientId = "fita-led-" + macStr;
     while (!mqtt.connected()) {
         if (mqtt.connect(clientId.c_str(), MQTT_USER, MQTT_PASS)) {
@@ -530,50 +480,50 @@ void setup() {
         } else { delay(3000); }
     }
 
-    // Inicia servidor web para mostrar progresso
+    // Inicia servidor web para mostrar progresso durante espera
     setupWebServer();
 
-    // Aguarda config por 5s
-    Serial.print("[CONFIG] Aguardando config do broker");
+    // Aguarda config por 5s processando requests web simultaneamente
+    Serial.print("[CONFIG] Aguardando");
     unsigned long t = millis();
     while (!configRecebida && millis() - t < 5000) {
         mqtt.loop();
-        server.handleClient();  // responde requisições durante espera
-        delay(100);
+        server.handleClient();
+        delay(50);
         Serial.print(".");
     }
     Serial.println();
 
-    if (!configRecebida) {
-        Serial.printf("[CONFIG] Nao encontrada. Usando padrao: num_leds=%d led_pin=%d\n",
-                      NUM_LEDS_DEFAULT, LED_PIN_DEFAULT);
-    } else {
+    if (configRecebida) {
         Serial.printf("[CONFIG] Aplicada: num_leds=%d led_pin=%d\n", numLeds, ledPin);
+    } else {
+        Serial.printf("[CONFIG] Nao encontrada. Padrao: num_leds=%d led_pin=%d\n", NUM_LEDS_DEFAULT, LED_PIN_DEFAULT);
     }
 
-    // Inicializa fita
-    strip = new Adafruit_NeoPixel(numLeds, ledPin, NEO_GRB + NEO_KHZ800);
-    strip->begin();
-    strip->setBrightness(brilho);
-    strip->clear();
-    strip->show();
+    // ── Inicialização ESTÁTICA da fita ─────────────────────
+    // updateLength e setPin recoonfiguram sem alocação dinâmica
+    strip.updateLength(numLeds);
+    strip.setPin(ledPin);
+    strip.begin();
+    strip.setBrightness(brilho);
+    strip.clear();
+    strip.show();
+    fitaIniciada = true;
     Serial.printf("[FITA] Iniciada: %d LEDs no pino %d\n", numLeds, ledPin);
 
-    // Assina demais tópicos
+    // Assina demais tópicos e publica presença
     mqtt.subscribe(TOPIC_CMD);
     publicarDiscovery();
     publicarStatus();
 
-    statusConexao = "✓ WiFi: " + redeConectada + " | MQTT OK | " + String(numLeds) + " LEDs no pino " + String(ledPin);
-    Serial.println("[OK] Sistema pronto!");
-    Serial.println("[WEB] Acesse: http://" + WiFi.localIP().toString());
+    statusConexao = "OK | WiFi: " + redeConectada + " | MQTT: " + String(MQTT_HOST) + " | " + String(numLeds) + " LEDs pino " + String(ledPin);
+    Serial.println("[OK] Sistema pronto! http://" + WiFi.localIP().toString());
 }
 
 // ══════════════════════════════════════════════════════════
 // LOOP
 // ══════════════════════════════════════════════════════════
 void loop() {
-    // Mantém conexões
     if (WiFi.status() != WL_CONNECTED) {
         statusConexao = "WiFi desconectado. Reconectando...";
         conectarWiFi();
@@ -587,8 +537,7 @@ void loop() {
     mqtt.loop();
     server.handleClient();
 
-    // Executa efeito
-    if (strip && millis() - ultimoTempo >= (unsigned long)velocidade) {
+    if (fitaIniciada && millis() - ultimoTempo >= (unsigned long)velocidade) {
         ultimoTempo = millis();
         executarEfeito();
     }
@@ -600,7 +549,7 @@ void loop() {
 void resetarEfeitos() {
     estadoPiscar = false; posCometa = 0; arcoIrisOffset = 0;
     ledAtual = 0; fase = 0.0; passo = 0;
-    strip->clear(); strip->show();
+    strip.clear(); strip.show();
 }
 
 void executarEfeito() {
@@ -627,106 +576,106 @@ void executarEfeito() {
 }
 
 uint32_t wheel(byte pos) {
-    if (pos < 85)        return strip->Color(pos*3, 255-pos*3, 0);
-    else if (pos < 170) { pos-=85;  return strip->Color(255-pos*3, 0, pos*3); }
-    else                { pos-=170; return strip->Color(0, pos*3, 255-pos*3); }
+    if (pos < 85)        return strip.Color(pos*3, 255-pos*3, 0);
+    else if (pos < 170) { pos-=85;  return strip.Color(255-pos*3, 0, pos*3); }
+    else                { pos-=170; return strip.Color(0, pos*3, 255-pos*3); }
 }
 
 void efeitoConfete() {
-    strip->setPixelColor(random(numLeds), strip->Color(random(255),random(255),random(255)));
-    strip->show();
+    strip.setPixelColor(random(numLeds), strip.Color(random(255),random(255),random(255)));
+    strip.show();
 }
 
 void efeitoCometa() {
-    int cauda = 15; strip->clear();
+    int cauda = 15; strip.clear();
     for (int j = 0; j < cauda; j++) {
         int p = posCometa - j;
         if (p >= 0 && p < numLeds) {
             float b = 1.0 - float(j)/cauda;
-            strip->setPixelColor(p, strip->Color(255*b, 100*b, 0));
+            strip.setPixelColor(p, strip.Color(255*b, 100*b, 0));
         }
     }
-    strip->show(); posCometa++;
+    strip.show(); posCometa++;
     if (posCometa > numLeds + cauda) posCometa = 0;
 }
 
 void efeitoPiscar() {
-    if (estadoPiscar) strip->fill(strip->Color(255,255,255));
-    else              strip->clear();
-    strip->show(); estadoPiscar = !estadoPiscar;
+    if (estadoPiscar) strip.fill(strip.Color(255,255,255));
+    else              strip.clear();
+    strip.show(); estadoPiscar = !estadoPiscar;
 }
 
 void efeitoArcoIris() {
     for (int i = 0; i < numLeds; i++)
-        strip->setPixelColor(i, wheel((i+arcoIrisOffset)&255));
-    strip->show(); arcoIrisOffset++;
+        strip.setPixelColor(i, wheel((i+arcoIrisOffset)&255));
+    strip.show(); arcoIrisOffset++;
 }
 
 void efeitoArcoIrisRotativo() {
     static uint16_t offset = 0;
     for (int i = 0; i < numLeds; i++)
-        strip->setPixelColor(i, wheel((i*256/numLeds+offset)&255));
-    strip->show(); offset++;
+        strip.setPixelColor(i, wheel((i*256/numLeds+offset)&255));
+    strip.show(); offset++;
 }
 
 void efeitoCorFixa(uint8_t r, uint8_t g, uint8_t b) {
     for (int i = 0; i < numLeds; i++)
-        strip->setPixelColor(i, strip->Color(r,g,b));
-    strip->show();
+        strip.setPixelColor(i, strip.Color(r,g,b));
+    strip.show();
 }
 
 void efeitoProgressivoPorSetores() {
     static int s = 0; int tot = 10, lps = numLeds/tot;
-    strip->clear();
+    strip.clear();
     for (int i = 0; i <= s && i < tot; i++)
         for (int j = 0; j < lps; j++) {
             int idx = i*lps+j;
-            if (idx < numLeds) strip->setPixelColor(idx, strip->Color(0,150,255));
+            if (idx < numLeds) strip.setPixelColor(idx, strip.Color(0,150,255));
         }
-    strip->show(); if (++s >= tot) s = 0;
+    strip.show(); if (++s >= tot) s = 0;
 }
 
 void efeitoAcenderSequencial() {
     if (ledAtual < numLeds) {
-        strip->setPixelColor(ledAtual, strip->Color(255,160,60));
-        strip->show(); ledAtual++;
+        strip.setPixelColor(ledAtual, strip.Color(255,160,60));
+        strip.show(); ledAtual++;
     }
 }
 
 void efeitoChuvaDeEstrelas() {
     for (int i = 0; i < numLeds; i++) {
-        uint32_t cor = strip->getPixelColor(i);
-        strip->setPixelColor(i, ((cor>>16)&0xFF)*4/5, ((cor>>8)&0xFF)*4/5, (cor&0xFF)*4/5);
+        uint32_t cor = strip.getPixelColor(i);
+        strip.setPixelColor(i, ((cor>>16)&0xFF)*4/5, ((cor>>8)&0xFF)*4/5, (cor&0xFF)*4/5);
     }
     for (int i = 0; i < 10; i++)
-        strip->setPixelColor(random(numLeds), strip->Color(255,200,100));
-    strip->show();
+        strip.setPixelColor(random(numLeds), strip.Color(255,200,100));
+    strip.show();
 }
 
 void efeitoPolicia() {
     static bool a = false; int m = numLeds/2;
     for (int i = 0; i < numLeds; i++)
-        strip->setPixelColor(i, a ? (i<m?strip->Color(255,0,0):strip->Color(0,0,255))
-                                  : (i<m?strip->Color(0,0,255):strip->Color(255,0,0)));
-    strip->show(); a = !a;
+        strip.setPixelColor(i, a ? (i<m?strip.Color(255,0,0):strip.Color(0,0,255))
+                                 : (i<m?strip.Color(0,0,255):strip.Color(255,0,0)));
+    strip.show(); a = !a;
 }
 
 void efeitoExplosaoCentral() {
-    static int p = 0; int c = numLeds/2; strip->clear();
+    static int p = 0; int c = numLeds/2; strip.clear();
     for (int i = 0; i <= p; i++) {
-        if (c-i >= 0)       strip->setPixelColor(c-i, strip->Color(255,200,50));
-        if (c+i < numLeds)  strip->setPixelColor(c+i, strip->Color(255,200,50));
+        if (c-i >= 0)       strip.setPixelColor(c-i, strip.Color(255,200,50));
+        if (c+i < numLeds)  strip.setPixelColor(c+i, strip.Color(255,200,50));
     }
-    strip->show(); if (++p >= numLeds/2) p = 0;
+    strip.show(); if (++p >= numLeds/2) p = 0;
 }
 
 void efeitoBrasil() {
     static uint16_t offset = 0;
     uint32_t cores[4] = {
-        strip->Color(0,156,59), strip->Color(255,223,0),
-        strip->Color(0,39,118), strip->Color(255,255,255)
+        strip.Color(0,156,59), strip.Color(255,223,0),
+        strip.Color(0,39,118), strip.Color(255,255,255)
     };
     for (int i = 0; i < numLeds; i++)
-        strip->setPixelColor(i, cores[((i+offset)/25)%4]);
-    strip->show(); offset++;
+        strip.setPixelColor(i, cores[((i+offset)/25)%4]);
+    strip.show(); offset++;
 }
